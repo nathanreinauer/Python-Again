@@ -1,5 +1,9 @@
-read("Read")
 
-read("Trying again.")
 
-Trying this again. Who knows?
+def func():
+    if 1<0:
+        print("Nope!")
+    else:
+        print("Duh.")
+
+func()
