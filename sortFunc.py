@@ -30,4 +30,5 @@ def sortFunc(*arg):
     print('After sorting: ',numSort)        # Once the while loop is up, print the result!
 
     
-sortFunc(67, 45, 2, 13, 1, 998)
+sortFunc(67, 45, 2, 13, 1, 998)             # These numbers are arbitrary, could be anything
+                                            # as long as each number is different.
