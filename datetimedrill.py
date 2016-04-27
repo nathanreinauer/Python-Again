@@ -1,52 +1,40 @@
 import datetime
 
-# Setting up time variables
-hourPort = int(datetime.datetime.now().strftime("%H"))
-hourNY = hourPort + 3
-hourLond = hourPort + 8
-minute = int(datetime.datetime.now().strftime("%M"))
+portlandInt = int(datetime.datetime.now().strftime("%H%M"))
+newyorkInt = int(datetime.datetime.now().strftime("%H%M")) + 300
+londonInt = int(datetime.datetime.now().strftime("%H%M")) + 800
 
+def main():
+    start()
 
-# Just in case NY time +3 is more than 24
-if hourNY >= 24:
-    hourNY = hourNY - 24
+def start():
+    choice = raw_input("To check if a branch is open, type 'p' for Portland, 'n' for New York, and 'l' for London.")
 
-if hourLond >= 24:
-    hourLond = hourLond - 24
+    if choice == "p":
+        q = portlandInt
+        c = "Portland"
+    elif choice == "n":
+        q = newyorkInt
+        c = "New York"
+    elif choice == "l":
+        q = londonInt
+        c = "London"
+    else:
+        print "Input not recognized. Please try again."
+        start()
 
-# Dividing AM and PM for Portland
-if hourPort >= 13:
-    hourPort = hourPort - 12
-    portlandTime = str(hourPort)+':'+str(minute)+' PM'
-else:
-    portlandTime = str(hourPort)+':'+str(minute)+' AM'
+    if q < 900 or q > 2100:
+        a = False
+    else:
+        a = True
 
-# Dividing AM and PM for New York
-if hourNY >= 13:
-    hourNY = hourNY - 12
-    nyTime = str(hourNY)+':'+str(minute)+' PM'
-else:
-    nyTime = str(hourNY)+':'+str(minute)+' AM'
+    def answer():
+        if a == True:
+            print "Yes, our "+c+" branch is open!"
+        else:
+            print "Sorry, our "+c+" branch is currently closed."
 
-# Dividing AM and PM for London
-if hourLond >= 13:
-    hourLond = hourLond - 12
-    londonTime = str(hourLond)+':'+str(minute)+' PM'
-else:
-    londonTime = str(hourLond)+':'+str(minute)+' AM'
-
-
-
-if portlandTime 
-
-
-
-
-
-# Making sure this works
-print portlandTime
-print nyTime
-print londonTime
-
-
-
+    answer()
+    start()
+    
+start()
