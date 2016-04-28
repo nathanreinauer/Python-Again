@@ -1,5 +1,5 @@
 
-import wx
+from wx import *
 
 class windowClass(wx.Frame):
 
@@ -8,25 +8,46 @@ class windowClass(wx.Frame):
 
         self.basicGUI()
 
+    def onDir(self, event):
+        """
+        Show the DirDialog and print the user's choice to stdout
+        """
+        dlg = wx.DirDialog(self, "Choose a directory:",
+                           style=wx.DD_DEFAULT_STYLE
+                           #| wx.DD_DIR_MUST_EXIST
+                           #| wx.DD_CHANGE_DIR
+                           )
+        if dlg.ShowModal() == wx.ID_OK:
+            print "You chose %s" % dlg.GetPath()
+        dlg.Destroy()
+        
+
     def basicGUI(self):
 
         panel = wx.Panel(self)
-        
-        menuBar = wx.MenuBar()
-        
-        fileButton = wx.Menu()
+        self.SetTitle('File Transfer Manager')
+        self.Show(True)
 
+        # Directory box labels
+        srcText = wx.StaticText(panel, -1, "Browse for source directory...",(3,3))
+        destText = wx.StaticText(panel, -1, "Browse for destination directory...",(3,50))
+
+        # Browse button
+        dirDlgBtn = wx.Button(panel, label="Browse",pos=(200,15))
+        dirDlgBtn.Bind(wx.EVT_BUTTON, self.onDir)
+
+        # Menu bar
+        menuBar = wx.MenuBar()
+        self.SetMenuBar(menuBar)
         
+        # File menu
+        fileButton = wx.Menu()
+        menuBar.Append(fileButton, 'File')
+
+        # File - Quit
         exitItem = wx.MenuItem(fileButton, wx.ID_EXIT,"Quit")
         fileButton.AppendItem(exitItem)
-
-        
-        menuBar.Append(fileButton, 'File')
-        
-        self.SetMenuBar(menuBar)
         self.Bind(wx.EVT_MENU, self.Quit, exitItem)
-
-
 
 
 
@@ -36,15 +57,6 @@ class windowClass(wx.Frame):
 ##        if checkBox.ShowModal()==wx.ID_OK: # or ID_YES? Something that means yes
 ##            Run transfer function
 
-        srcText = wx.StaticText(panel, -1, "Browse for source directory...", pos=(3,3))
-
-        destText = wx.StaticText(panel, -1, "Browse for destination directory...",(3,30))
-
-
-            
-
-        self.SetTitle('Welcome!')
-        self.Show(True)
 
     def Quit(self, e):
         self.Close()
