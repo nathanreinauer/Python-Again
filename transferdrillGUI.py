@@ -9,10 +9,15 @@ pathB =  os.path.expanduser('~\Desktop\Home Office')
 # Number of files in Customer Orders
 numA = len([f for f in os.listdir(pathA)if os.path.isfile(os.path.join(pathA, f))])
 
-
+# Today - 24 hours = "yesterday"
+yesterday = datetime.now() - timedelta(days=1)
 
 def main():
     start()
+
+def modTime(filePath):
+    t = os.path.getmtime(filePath)
+    return datetime.fromtimestamp(t)
 
 def start():
     
@@ -27,14 +32,6 @@ def start():
                            "Would you like to move the new ones to Home Office? y/n: ")
         
         if choice == "y":
-            
-            # Today - 24 hours = "yesterday"
-            yesterday = datetime.now() - timedelta(days=1)
-            
-            # 
-            def modTime(filePath):
-                t = os.path.getmtime(filePath)
-                return datetime.fromtimestamp(t)
             
             # Figure out when each file in Customer Orders was modified
             for file in os.listdir(pathA):
@@ -54,4 +51,16 @@ def start():
         else:
             print "OK, bye."
 
+def counting():
+    count = 0
+    # Figure out how many files are new
+    for file in os.listdir(pathA):
+        mod = modTime(pathA+"//"+file)
+
+        if yesterday < mod:
+            count = count+1
+
+    print count
+            
+counting()
 start()
