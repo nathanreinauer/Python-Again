@@ -11,37 +11,22 @@ numB = len([f for f in os.listdir(pathB)if os.path.isfile(os.path.join(pathB, f)
 
 def main():
     start()
-
-def start():
-    choice = raw_input("You currently have "+str(numA)+
-                       " file(s) in Folder A. Would you like to move them to Folder B? y/n: ")
-    if choice == "y":
-        print str(pathA)
-        for fileA in str(pathA):
-            shutil.move(fileA, str(pathB))
-    else:
-        print "OK, bye."
-
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+def start():
+    if numA == 0:
+        print "There are no files in Folder A."
+        exit()
+    else:
+        choice = raw_input("You currently have "+str(numA)+
+                           " file(s) in Folder A. Would you like to move them to Folder B? y/n: ")
+        if choice == "y":
+            for file in os.listdir(pathA):
+                shutil.move((pathA+"//"+file), pathB)
+                print pathA+"//"+file+" successfully moved."
+            print "Operation completed."
+        else:
+            print "OK, bye."
+            exit()
 
 
 start()
