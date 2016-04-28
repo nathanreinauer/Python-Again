@@ -4,7 +4,7 @@ from wx import *
 class windowClass(wx.Frame):
 
     def __init__(self, *args, **kwargs):
-        super(windowClass, self).__init__(size=(500,200),*args, **kwargs)
+        super(windowClass, self).__init__(size=(470,175),*args, **kwargs)
 
         self.basicGUI()
 
@@ -28,14 +28,6 @@ class windowClass(wx.Frame):
         self.SetTitle('File Transfer Manager')
         self.Show(True)
 
-        # Directory box labels
-        srcText = wx.StaticText(panel, -1, "Browse for source directory...",(3,3))
-        destText = wx.StaticText(panel, -1, "Browse for destination directory...",(3,50))
-
-        # Browse button
-        dirDlgBtn = wx.Button(panel, label="Browse",pos=(200,15))
-        dirDlgBtn.Bind(wx.EVT_BUTTON, self.onDir)
-
         # Menu bar
         menuBar = wx.MenuBar()
         self.SetMenuBar(menuBar)
@@ -44,10 +36,35 @@ class windowClass(wx.Frame):
         fileButton = wx.Menu()
         menuBar.Append(fileButton, 'File')
 
+        # File - Check/Transfer
+        checkItem = wx.MenuItem(fileButton, wx.ID_EXIT,"Check/Transfer Files...")
+        fileButton.AppendItem(checkItem)
+        self.Bind(wx.EVT_MENU, self.Check, checkItem)
+
         # File - Quit
         exitItem = wx.MenuItem(fileButton, wx.ID_EXIT,"Quit")
         fileButton.AppendItem(exitItem)
         self.Bind(wx.EVT_MENU, self.Quit, exitItem)
+        
+        # Directory box labels
+        srcText = wx.StaticText(panel, -1, "Browse for source directory...",(10,10))
+        destText = wx.StaticText(panel, -1, "Browse for destination directory...",(10,57))
+
+        self.control1 = wx.TextCtrl(self,size=(200, -1),pos=(10,27))
+        self.control2 = wx.TextCtrl(self,size=(200, -1),pos=(10,74))
+
+        # Browse button
+        srcBtn = wx.Button(panel, label="Browse",pos=(217,26))
+        srcBtn.Bind(wx.EVT_BUTTON, self.onDir)
+
+        destBtn = wx.Button(panel, label="Browse",pos=(217,73))
+        destBtn.Bind(wx.EVT_BUTTON, self.onDir)
+
+        # Check button
+        checkBtn = wx.Button(panel, label="Check/Transfer",size=(110,73),pos=(325,26))
+        # (doesn't work yet) checkBtn.bind(wx.EVT_BUTTON, self.Quit, exitItem)
+
+
 
 
 
@@ -60,6 +77,12 @@ class windowClass(wx.Frame):
 
     def Quit(self, e):
         self.Close()
+
+    def Check(self, e):
+        self.Close() # This will open OK/Cancel dialog and display the number of new files
+
+    def Transfer(self, e):
+        self.Close() # This will run the transfer if they click OK to dialog
 
         
 def main():
