@@ -3,18 +3,24 @@ import os.path
 
 
 # number of files in folder A and B
-path = os.getenv('HOME') + '\Desktop\Folder A'
-numA = len([f for f in os.listdir(path)if os.path.isfile(os.path.join(path, f))])
+pathA =  os.path.expanduser('~\Desktop\Folder A')#os.getenv('HOME') + '\Desktop\Folder A'
+numA = len([f for f in os.listdir(pathA)if os.path.isfile(os.path.join(pathA, f))])
 
-path = os.getenv('HOME') + '\Desktop\Folder B'
-numB = len([f for f in os.listdir(path)if os.path.isfile(os.path.join(path, f))])
+pathB =  os.path.expanduser('~\Desktop\Folder B')#os.getenv('HOME') + '\Desktop\Folder B'
+numB = len([f for f in os.listdir(pathB)if os.path.isfile(os.path.join(pathB, f))])
 
 def main():
     start()
 
 def start():
     choice = raw_input("You currently have "+str(numA)+
-                       " files in Folder A. Would you like to move them to Folder B? y/n: ")
+                       " file(s) in Folder A. Would you like to move them to Folder B? y/n: ")
+    if choice == "y":
+        print str(pathA)
+        for fileA in str(pathA):
+            shutil.move(fileA, str(pathB))
+    else:
+        print "OK, bye."
 
     
 
