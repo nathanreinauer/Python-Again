@@ -1,12 +1,12 @@
 import shutil
 import os.path
-
+from datetime import *
 
 # number of files in folder A and B
-pathA =  os.path.expanduser('~\Desktop\Folder A')#os.getenv('HOME') + '\Desktop\Folder A'
+pathA =  os.path.expanduser('~\Desktop\Folder A')
 numA = len([f for f in os.listdir(pathA)if os.path.isfile(os.path.join(pathA, f))])
 
-pathB =  os.path.expanduser('~\Desktop\Folder B')#os.getenv('HOME') + '\Desktop\Folder B'
+pathB =  os.path.expanduser('~\Desktop\Folder B')
 numB = len([f for f in os.listdir(pathB)if os.path.isfile(os.path.join(pathB, f))])
 
 def main():
@@ -28,6 +28,24 @@ def start():
         else:
             print "OK, bye."
             exit()
+            
+yesterday = datetime.now() - timedelta(days=1)
+print yesterday
+
+def modTime(filePath):
+    t = os.path.getmtime(filePath)
+    return datetime.fromtimestamp(t)
+
+for file in os.listdir(pathA):
+    d = modTime(pathA+"//"+file)
+    if yesterday > d:
+        print "yes"
+        shutil.copy((pathA+"//"+file), pathB)
+        print pathA+"//"+file+" successfully copied."
+    if yesterday < d:
+        print "no"
+
+
 
 
 start()
