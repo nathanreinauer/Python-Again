@@ -2,13 +2,7 @@
 from wx import *
 from datetime import *
 import os.path
-
-### Path to each folder
-##srcPath = os.path.expanduser('~\Desktop\Customer Orders')
-##destPath = os.path.expanduser('~\Desktop\Home Office')
-
-### Number of files in Customer Orders
-##newFiles = len([f for f in os.listdir(srcPath)if os.path.isfile(os.path.join(srcPath, f))])
+import shutil
 
 # Today - 24 hours = "yesterday"
 yesterday = datetime.now() - timedelta(days=1)
@@ -19,9 +13,6 @@ class windowClass(wx.Frame):
         super(windowClass, self).__init__(size=(470,175),*args, **kwargs)
 
         self.basicGUI()
-
-
-        
 
     def basicGUI(self):
 
@@ -67,18 +58,26 @@ class windowClass(wx.Frame):
         # checkBtn = Enable(False)
         checkBtn.Bind(wx.EVT_BUTTON, self.Message)
 
+    def counting(self):
+        count = 0
+        # Figure out how many files are new
+        for file in os.listdir(self.srcPath):
+            mod = self.modTime(self.srcPath+"//"+file)
 
+            if yesterday < mod:
+                count = count+1
+        return count
 
+    def modTime(self, filePath):
+        t = os.path.getmtime(filePath)
+        return datetime.fromtimestamp(t)
 
     def Message(self, e):
-        # Number of files in Customer Orders
-        newFiles = len([f for f in os.listdir(self.srcPath)if os.path.isfile(os.path.join(self.srcPath, f))])
-        checkBox = wx.MessageDialog(None, 'There are currently '+str(newFiles)+
+        checkBox = wx.MessageDialog(None, 'There are currently '+str(self.counting())+
                                     ' new files in the source folder. Copy them to the destination folder?',
                                     caption='Caption',style=YES_NO|CENTRE, pos=DefaultPosition)
         checkAnswer = checkBox.ShowModal()
         if checkAnswer == wx.ID_YES:
-            print "Here's where transfer happens."
             self.Transfer()
         checkBox.Destroy()
 
@@ -86,7 +85,19 @@ class windowClass(wx.Frame):
         self.Close()
 
     def Transfer(self):
-        self.Close() # This will run the transfer if they click OK to dialog
+        for file in os.listdir(self.srcPath):
+            mod = self.modTime(self.srcPath+"//"+file)
+
+            # Copy the files that were modified in the last 24 hours
+            if yesterday < mod:
+                shutil.copy((self.srcPath+"//"+file), self.destPath)
+                print self.srcPath+"//"+file+" successfully copied."
+
+            # Ignore older files
+            elif yesterday > mod:
+                print "File skipped."
+                    
+        print "Operation completed."
 
     def TextBox1(self, path):
         self.control1.ChangeValue(path)
@@ -98,8 +109,6 @@ class windowClass(wx.Frame):
     def onDir1(self, event):
         dlg = wx.DirDialog(self, "Choose a directory:",
                            style=wx.DD_DEFAULT_STYLE
-                           #| wx.DD_DIR_MUST_EXIST
-                           #| wx.DD_CHANGE_DIR
                            )
         if dlg.ShowModal() == wx.ID_OK:
             self.srcPath = dlg.GetPath()
@@ -111,8 +120,6 @@ class windowClass(wx.Frame):
     def onDir2(self, event):
         dlg = wx.DirDialog(self, "Choose a directory:",
                            style=wx.DD_DEFAULT_STYLE
-                           #| wx.DD_DIR_MUST_EXIST
-                           #| wx.DD_CHANGE_DIR
                            )
         if dlg.ShowModal() == wx.ID_OK:
             self.destPath = dlg.GetPath()
