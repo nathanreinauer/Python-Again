@@ -8,18 +8,7 @@ class windowClass(wx.Frame):
 
         self.basicGUI()
 
-    def onDir(self, event):
-        """
-        Show the DirDialog and print the user's choice to stdout
-        """
-        dlg = wx.DirDialog(self, "Choose a directory:",
-                           style=wx.DD_DEFAULT_STYLE
-                           #| wx.DD_DIR_MUST_EXIST
-                           #| wx.DD_CHANGE_DIR
-                           )
-        if dlg.ShowModal() == wx.ID_OK:
-            print "You chose %s" % dlg.GetPath()
-        dlg.Destroy()
+
         
 
     def basicGUI(self):
@@ -50,15 +39,16 @@ class windowClass(wx.Frame):
         srcText = wx.StaticText(panel, -1, "Browse for source directory...",(10,10))
         destText = wx.StaticText(panel, -1, "Browse for destination directory...",(10,57))
 
-        self.control1 = wx.TextCtrl(self,size=(200, -1),pos=(10,27))
-        self.control2 = wx.TextCtrl(self,size=(200, -1),pos=(10,74))
+        # Directory text boxes
+        self.control1 = wx.TextCtrl(panel,size=(200, -1),pos=(10,27))
+        self.control2 = wx.TextCtrl(panel,size=(200, -1),pos=(10,74))
 
-        # Browse button
+        # Browse buttons
         srcBtn = wx.Button(panel, label="Browse",pos=(217,26))
-        srcBtn.Bind(wx.EVT_BUTTON, self.onDir)
+        srcBtn.Bind(wx.EVT_BUTTON, self.onDir1)
 
         destBtn = wx.Button(panel, label="Browse",pos=(217,73))
-        destBtn.Bind(wx.EVT_BUTTON, self.onDir)
+        destBtn.Bind(wx.EVT_BUTTON, self.onDir2)
 
         # Check button
         checkBtn = wx.Button(panel, label="Check/Transfer",size=(110,73),pos=(325,26))
@@ -83,6 +73,36 @@ class windowClass(wx.Frame):
 
     def Transfer(self, e):
         self.Close() # This will run the transfer if they click OK to dialog
+
+    def TextBox1(self, path):
+        self.control1.ChangeValue(path)
+
+    def TextBox2(self, path):
+        self.control2.ChangeValue(path)
+        
+    # Browse source folder dialog
+    def onDir1(self, event):
+        dlg = wx.DirDialog(self, "Choose a directory:",
+                           style=wx.DD_DEFAULT_STYLE
+                           #| wx.DD_DIR_MUST_EXIST
+                           #| wx.DD_CHANGE_DIR
+                           )
+        if dlg.ShowModal() == wx.ID_OK:
+            srcPath = dlg.GetPath()
+            self.TextBox1(srcPath)
+        dlg.Destroy()
+
+    # Browse destination folder dialog
+    def onDir2(self, event):
+        dlg = wx.DirDialog(self, "Choose a directory:",
+                           style=wx.DD_DEFAULT_STYLE
+                           #| wx.DD_DIR_MUST_EXIST
+                           #| wx.DD_CHANGE_DIR
+                           )
+        if dlg.ShowModal() == wx.ID_OK:
+            srcPath = dlg.GetPath()
+            self.TextBox2(srcPath)
+        dlg.Destroy()
 
         
 def main():
