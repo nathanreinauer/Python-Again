@@ -7,7 +7,11 @@ import shutil
 # Today - 24 hours = "yesterday"
 yesterday = datetime.now() - timedelta(days=1)
 
+
+                
+
 class windowClass(wx.Frame):
+
 
     def __init__(self, *args, **kwargs):
         super(windowClass, self).__init__(size=(470,175),*args, **kwargs)
@@ -19,6 +23,13 @@ class windowClass(wx.Frame):
         panel = wx.Panel(self)
         self.SetTitle('File Transfer Manager')
         self.Show(True)
+
+        self.dlg2 = wx.DirDialog(None, "Choose a directory:",style=wx.DD_DEFAULT_STYLE)
+        self.dlg = wx.DirDialog(None, "Choose a directory:",style=wx.DD_DEFAULT_STYLE)
+        self.srcPath = self.dlg.GetPath()
+        self.destPath = self.dlg.GetPath()
+
+            
 
         # Menu bar
         menuBar = wx.MenuBar()
@@ -73,13 +84,17 @@ class windowClass(wx.Frame):
         return datetime.fromtimestamp(t)
 
     def Message(self, e):
-        checkBox = wx.MessageDialog(None, 'There are currently '+str(self.counting())+
-                                    ' new files in the source folder. Copy them to the destination folder?',
-                                    caption='Caption',style=YES_NO|CENTRE, pos=DefaultPosition)
-        checkAnswer = checkBox.ShowModal()
-        if checkAnswer == wx.ID_YES:
-            self.Transfer()
-        checkBox.Destroy()
+
+        if self.srcPath or self.destPath == None:
+            print "Whoops!"
+        else:
+            checkBox = wx.MessageDialog(None, 'There are currently '+str(self.counting())+
+                                        ' new files in the source folder. Copy them to the destination folder?',
+                                        caption='Caption',style=YES_NO|CENTRE, pos=DefaultPosition)
+            checkAnswer = checkBox.ShowModal()
+            if checkAnswer == wx.ID_YES:
+                self.Transfer()
+            checkBox.Destroy()
 
     def Quit(self, e):
         self.Close()
@@ -107,24 +122,22 @@ class windowClass(wx.Frame):
         
     # Browse source folder dialog
     def onDir1(self, event):
-        dlg = wx.DirDialog(self, "Choose a directory:",
-                           style=wx.DD_DEFAULT_STYLE
-                           )
-        if dlg.ShowModal() == wx.ID_OK:
-            self.srcPath = dlg.GetPath()
+
+        if self.dlg.ShowModal() == wx.ID_OK:
+
             self.TextBox1(self.srcPath)
-        dlg.Destroy()
+        self.dlg.Destroy()
         
 
     # Browse destination folder dialog
     def onDir2(self, event):
-        dlg = wx.DirDialog(self, "Choose a directory:",
-                           style=wx.DD_DEFAULT_STYLE
-                           )
-        if dlg.ShowModal() == wx.ID_OK:
-            self.destPath = dlg.GetPath()
+##        dlg = wx.DirDialog(self, "Choose a directory:",
+##                           style=wx.DD_DEFAULT_STYLE
+##                           )
+        if self.dlg2.ShowModal() == wx.ID_OK:
+            #self.destPath = dlg.GetPath()
             self.TextBox2(self.destPath)
-        dlg.Destroy()
+        self.dlg2.Destroy()
 
         
 def main():
