@@ -7,11 +7,9 @@ import shutil
 # Today - 24 hours = "yesterday"
 yesterday = datetime.now() - timedelta(days=1)
 
-# Setting up SQLite and current time format
+# Setting up SQLite
 conn = sqlite3.connect('TranDB.db')
 c = conn.cursor()
-today = datetime.now()
-timeNow = today.strftime("%a, %b %d %Y at %I:%M %p")
 
 class windowClass(wx.Frame):
 
@@ -42,6 +40,11 @@ class windowClass(wx.Frame):
         fileButton.AppendItem(checkItem)
         self.Bind(wx.EVT_MENU, self.Message, checkItem)
 
+        # File - "Date/Time of Last Check"
+        timeItem = wx.MenuItem(fileButton, wx.ID_ANY,"Time of Last Check")
+        fileButton.AppendItem(timeItem)
+        self.Bind(wx.EVT_MENU, self.TimeMessage, timeItem)
+
         # File - "Quit"
         exitItem = wx.MenuItem(fileButton, wx.ID_EXIT,"Quit")
         fileButton.AppendItem(exitItem)
@@ -65,9 +68,6 @@ class windowClass(wx.Frame):
         checkBtn = wx.Button(panel, label="Check/Transfer",size=(110,73),pos=(325,26))
         checkBtn.Bind(wx.EVT_BUTTON, self.Message)
 
-        # SQL --- VARIABLES
-        #dateTimeCell = str(getCell())[8:-3]
-        #insertCell(timeNow)
 
 #------------------------FUNCTIONS------------------------#
         
@@ -80,9 +80,7 @@ class windowClass(wx.Frame):
     def getCell(self):
         c.execute("SELECT * FROM LastCheck ORDER BY ID DESC LIMIT 1")
         return c.fetchall()
-
     
-
     # Figure out how many new files are in source directory
     def counting(self):
         count = 0
@@ -103,13 +101,23 @@ class windowClass(wx.Frame):
         try:
             checkBox = wx.MessageDialog(None, 'There are currently '+str(self.counting())+
                                         ' new files in the source folder. Copy them to the destination folder?',
-                                        caption='Caption',style=YES_NO|CENTRE, pos=DefaultPosition)
+                                        caption='Check or Transfer Files',style=YES_NO|CENTRE, pos=DefaultPosition)
             checkAnswer = checkBox.ShowModal()
             if checkAnswer == wx.ID_YES:
                 self.Transfer()
             checkBox.Destroy()
+            timeNow = datetime.now().strftime("%a, %b %d %Y at %I:%M %p")
+            self.insertCell(timeNow)
         except:
             print "You failed to specify one or more directories."
+
+    # Dialog box giving time of last file check
+    def TimeMessage(self, e):
+        timeBox = wx.MessageDialog(None, 'The most recent File Check was performed on '+(str(self.getCell())[8:-3])+'.',
+                                    caption='Last File Check',style=OK|CENTRE, pos=DefaultPosition)
+        timeAnswer = timeBox.ShowModal()
+        if timeAnswer == wx.ID_OK:
+            timeBox.Destroy()
 
     # Makes GUI close
     def Quit(self, e):
@@ -128,9 +136,6 @@ class windowClass(wx.Frame):
             # Ignore older files
             elif yesterday > mod:
                 print "File skipped."
-        self.insertCell(timeNow)
-        self.dateTimeCell = str(self.getCell())[8:-3]
-        print self.dateTimeCell
         print "Operation completed."
 
     # Adds directory paths to the textboxes
