@@ -5,17 +5,18 @@ from datetime import *
 
 conn = sqlite3.connect('TranDB.db')
 c = conn.cursor()
-timeNow = datetime.now()
-today = timeNow.strftime("%a, %b %d %Y at %I:%M %p")
+today = datetime.now()
+timeNow = today.strftime("%a, %b %d %Y at %I:%M %p")
 
 #-----ADD INFO-----#
 
 def insertCell(add):
     c.execute("INSERT INTO LastCheck (DateTime) VALUES (?)", (add,))
+    conn.commit()
+    
+insertCell(timeNow)
 
-insertCell(today)
 
-conn.commit()
 
 
 #-----RETRIEVE LATEST RECORD-----#
