@@ -5,9 +5,12 @@ from tkinter import messagebox
 
 headContent = (
 """
+<html>
 <head>
-Stay tuned for our amazing summer sale!
+<title>Summer Sale</title>
 </head>
+<body>
+<h1>
 """
 )
 
@@ -46,18 +49,18 @@ class GUIhtml:
         self.frame_content.pack()
         
         # Body content (labels)
-        ttk.Label(self.frame_content,text='Name:').grid(row=0,column=0, padx=5, sticky='sw')
-        ttk.Label(self.frame_content,text='Email:').grid(row=0,column=1, padx=5, sticky='sw')    
-        ttk.Label(self.frame_content,text='Comments:').grid(row=2,column=0,padx=5, sticky='sw')
+##        ttk.Label(self.frame_content,text='Name:').grid(row=0,column=0, padx=5, sticky='sw')
+##        ttk.Label(self.frame_content,text='Email:').grid(row=0,column=1, padx=5, sticky='sw')    
+##        ttk.Label(self.frame_content,text='Comments:').grid(row=2,column=0,padx=5, sticky='sw')
 
         # Body content (textboxes)
-        self.entry_name=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
-        self.entry_email=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
+##        self.entry_name=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
+##        self.entry_email=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
         self.text_body=Text(self.frame_content,width=50,height=10, font=('Arial',10))
 
         # Placement of textboxes
-        self.entry_name.grid(row=1,column=0)
-        self.entry_email.grid(row=1,column=1)
+##        self.entry_name.grid(row=1,column=0)
+##        self.entry_email.grid(row=1,column=1)
         self.text_body.grid(row=3,column=0,columnspan=2)
 
         # Buttons
@@ -67,28 +70,44 @@ class GUIhtml:
 #-------------------------FUNCTIONS-------------------------#
 
         # Function that creates and writes html file
-    def createHTML(name, content):
-        file = open(name, "w")
+    def createHTML(self, content):
+        file = open("Company Website.html", "w")
         file.write(content)
         file.close()
-        print("Operation completed.")
+##        print("Operation completed.")
         
         # Prints contents of textboxes to the shell on Submit click
     def submit(self):
-        print('Name: {}'.format(self.entry_name.get()))
-        print('Email: {}'.format(self.entry_email.get()))
-        print('<html> '+headContent+' <body> {} </body> </html>'.format(self.text_body.get(1.0,'end')))
+##        print('Name: {}'.format(self.entry_name.get()))
+##        print('Email: {}'.format(self.entry_email.get()))
+        self.createHTML((
+'''
+<html>
+<head>
+    <title>
+        Summer Sale
+    </title>
+</head>
+<body>
+    <h2>
+        Stay tuned for our amazing summer sale!
+    </h2>
+    <p>
+        {}
+    </p>
+</body>
+</html>'''.format(self.text_body.get(1.0,'end'))))
         
         # Clears textboxes after submitting
         self.clear()
 
         # Confirmation of submission via dialog box
-        messagebox.showinfo(title='Summer Sales Content',message='Body content submitted.')
+        messagebox.showinfo(title='Summer Sales Content',message='Body text submitted.')
 
         # Clears all textboxes on Clear click
     def clear(self):
-        self.entry_name.delete(0,'end')
-        self.entry_email.delete(0,'end')
+##        self.entry_name.delete(0,'end')
+##        self.entry_email.delete(0,'end')
         self.text_body.delete(1.0,'end')
         
 # Run program          
