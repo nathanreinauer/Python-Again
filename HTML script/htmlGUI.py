@@ -3,6 +3,14 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 
+headContent = (
+"""
+<head>
+Stay tuned for our amazing summer sale!
+</head>
+"""
+)
+
 class GUIhtml:
 
 #-------------------------GUI-------------------------#
@@ -45,36 +53,43 @@ class GUIhtml:
         # Body content (textboxes)
         self.entry_name=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
         self.entry_email=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
-        self.text_comments=Text(self.frame_content,width=50,height=10, font=('Arial',10))
+        self.text_body=Text(self.frame_content,width=50,height=10, font=('Arial',10))
 
         # Placement of textboxes
         self.entry_name.grid(row=1,column=0)
         self.entry_email.grid(row=1,column=1)
-        self.text_comments.grid(row=3,column=0,columnspan=2)
+        self.text_body.grid(row=3,column=0,columnspan=2)
 
         # Buttons
         ttk.Button(self.frame_content,text='Submit', command=self.submit).grid(row=4,column=0,padx=5, sticky='e')
         ttk.Button(self.frame_content,text='Clear',command=self.clear).grid(row=4,column=1,padx=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
+
+        # Function that creates and writes html file
+    def createHTML(name, content):
+        file = open(name, "w")
+        file.write(content)
+        file.close()
+        print("Operation completed.")
         
         # Prints contents of textboxes to the shell on Submit click
     def submit(self):
         print('Name: {}'.format(self.entry_name.get()))
         print('Email: {}'.format(self.entry_email.get()))
-        print('Comments: {}'.format(self.text_comments.get(1.0,'end')))
+        print('<html> '+headContent+' <body> {} </body> </html>'.format(self.text_body.get(1.0,'end')))
         
         # Clears textboxes after submitting
         self.clear()
 
         # Confirmation of submission via dialog box
-        messagebox.showinfo(title='Explore California Feedback',message='Comments submitted.')
+        messagebox.showinfo(title='Summer Sales Content',message='Body content submitted.')
 
         # Clears all textboxes on Clear click
     def clear(self):
         self.entry_name.delete(0,'end')
         self.entry_email.delete(0,'end')
-        self.text_comments.delete(1.0,'end')
+        self.text_body.delete(1.0,'end')
         
 # Run program          
 def main():            
