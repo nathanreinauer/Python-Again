@@ -76,7 +76,8 @@ class GUIhtml:
         self.clear()
 
         # Confirmation of submission via dialog box
-        messagebox.showinfo(title='Summer Sales Content',message='Body text submitted.')
+        messagebox.showinfo(title='Web page created successfully!',message=
+                            "Success! Navigate to this script's parent directory to view your new page.")
 
         # Clears textbox on Clear click
     def clear(self):
