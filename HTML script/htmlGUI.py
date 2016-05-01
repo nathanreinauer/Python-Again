@@ -37,30 +37,21 @@ class GUIhtml:
         self.frame_header.pack()
 
         # Header content
-        self.logo = PhotoImage(file='tour_logo.gif')
-        ttk.Label(self.frame_header, image=self.logo).grid(row=0,column=0,rowspan=2)
-        ttk.Label(self.frame_header,text='Thanks for exploring!',style='Header.TLabel').grid(row=0,column=1)
-        ttk.Label(self.frame_header, wraplength=300,
-                  text=("We're glad you chose Explore California for your recent adventure!  "
-                        "Please tell us what you thought about the 'Desert to Sea' tour.")).grid(row=1,column=1)
+##        self.logo = PhotoImage(file='tour_logo.gif')
+##        ttk.Label(self.frame_header, image=self.logo).grid(row=0,column=0,rowspan=2)
+        ttk.Label(self.frame_header,text='Summer Sales',style='Header.TLabel').grid(row=0,column=1)
+        ttk.Label(self.frame_header, wraplength=381,
+                  text=("Welcome to the super easy content editor for the Summer Sales page!"
+                        " Enter your text below and press 'Submit'.")).grid(row=1,column=1)
 
         # Body 
         self.frame_content=ttk.Frame(master)
         self.frame_content.pack()
         
-        # Body content (labels)
-##        ttk.Label(self.frame_content,text='Name:').grid(row=0,column=0, padx=5, sticky='sw')
-##        ttk.Label(self.frame_content,text='Email:').grid(row=0,column=1, padx=5, sticky='sw')    
-##        ttk.Label(self.frame_content,text='Comments:').grid(row=2,column=0,padx=5, sticky='sw')
-
-        # Body content (textboxes)
-##        self.entry_name=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
-##        self.entry_email=ttk.Entry(self.frame_content,width=24, font=('Arial',10))
+        # Body label
         self.text_body=Text(self.frame_content,width=50,height=10, font=('Arial',10))
 
-        # Placement of textboxes
-##        self.entry_name.grid(row=1,column=0)
-##        self.entry_email.grid(row=1,column=1)
+        # Placement of textbox
         self.text_body.grid(row=3,column=0,columnspan=2)
 
         # Buttons
@@ -69,17 +60,14 @@ class GUIhtml:
 
 #-------------------------FUNCTIONS-------------------------#
 
-        # Function that creates and writes html file
+        # Creates and writes html file
     def createHTML(self, content):
         file = open("Company Website.html", "w")
         file.write(content)
         file.close()
-##        print("Operation completed.")
         
-        # Prints contents of textboxes to the shell on Submit click
+        # Takes content from textbox for use in createHTML() function
     def submit(self):
-##        print('Name: {}'.format(self.entry_name.get()))
-##        print('Email: {}'.format(self.entry_email.get()))
         self.createHTML((
 '''
 <html>
@@ -96,18 +84,17 @@ class GUIhtml:
         {}
     </p>
 </body>
-</html>'''.format(self.text_body.get(1.0,'end'))))
+</html>
+'''.format(self.text_body.get(1.0,'end'))))
         
-        # Clears textboxes after submitting
+        # Clears textbox after submitting
         self.clear()
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Summer Sales Content',message='Body text submitted.')
 
-        # Clears all textboxes on Clear click
+        # Clears textbox on Clear click
     def clear(self):
-##        self.entry_name.delete(0,'end')
-##        self.entry_email.delete(0,'end')
         self.text_body.delete(1.0,'end')
         
 # Run program          
