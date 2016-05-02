@@ -1,21 +1,24 @@
 import sqlite3
+from tkinter import *
+from tkinter import ttk
+
+root = Tk()
 
 conn = sqlite3.connect('Content Database.db')
 c = conn.cursor()
 
-nameID = 2
-contentID = 3
+contentBox = StringVar()
+combobox = ttk.Combobox(root, textvariable = contentBox, state='readonly')
+combobox.pack()
+combobox.config(values = ('Clothes', 'Food', 'Movies', 'Toys', 'Sand'))
 
-#-----RETRIEVE RECORD-----#
-
-def getName():
-    c.execute("SELECT Name FROM Content WHERE ID ={}".format(str(nameID)))
-    return c.fetchall()
-
+contentBox.set('Select content:')
 
 def getContent():
-    c.execute("SELECT HTML FROM Content WHERE ID ={}".format(str(contentID)))
+    c.execute("SELECT HTML FROM Content WHERE conName ='{}'".format(contentBox.get()))
     return c.fetchall()
 
-print(getName())
-print(getContent())
+##print(getContent())
+
+root.mainloop()
+
