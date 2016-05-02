@@ -37,7 +37,7 @@ class GUIhtml:
         # Body 
         self.frame_content=ttk.Frame(master)
         self.frame_content.pack()
-        self.text_body=Text(self.frame_content,width=50,height=10,wrap=WORD)
+        self.text_body=Text(self.frame_content,width=50,height=15,wrap=WORD)
 
         # Combobox
         self.contentBox = StringVar()
@@ -62,13 +62,16 @@ class GUIhtml:
 
         # Inserts content into textbox
     def setContent(self):
+        self.clear()
         combo = self.getContent()
+        combo = combo.replace('\\n', '\n')
         self.text_body.insert(END,combo)
 
         # Grabs info from database on 'Select' button click
     def getContent(self):
         c.execute("SELECT HTML FROM Content WHERE conName ='{}'".format(self.contentBox.get()))
-        return c.fetchall()
+        fetch = (c.fetchall())
+        return str(fetch)[3:-4]
 
 
         # Creates and writes html file
