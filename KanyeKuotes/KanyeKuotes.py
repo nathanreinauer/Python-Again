@@ -1,13 +1,12 @@
 import sqlite3
 from tkinter import *
 from tkinter import ttk
-from tkinter import messagebox
 import random
 
 conn = sqlite3.connect('Kanye.db')
 c = conn.cursor()
 
-class GUIhtml:
+class GUIkanye:
 
 #-------------------------GUI-------------------------#
 
@@ -52,11 +51,11 @@ class GUIhtml:
         # Inserts content into textbox
     def setContent(self):
         self.clear()
-        combo = self.getContent()
-        combo = combo.replace('\\', '')
-        self.text_body.insert(END,combo)
+        quote = self.getContent()
+        quote = quote.replace('\\', '')
+        self.text_body.insert(END,quote)
 
-        # Grabs info from database on 'Select' button click
+        # Grabs info from database on 'Get Quote' button click
     def getContent(self):
         c.execute("SELECT Quote FROM Quotes WHERE ID ={}".format(random.randint(1,54)))
         fetch = (c.fetchall())
@@ -70,7 +69,7 @@ class GUIhtml:
 def main():            
     
     root = Tk()
-    guihtml = GUIhtml(root)
+    guihtml = GUIkanye(root)
     root.mainloop()
     
 if __name__ == "__main__": main()
