@@ -29,9 +29,6 @@ class GUIhtml:
 
         # Header content
         ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ccffff').grid(row=0,column=1,pady=5)
-##        ttk.Label(self.frame_header, wraplength=350,
-##                  text=("Enter movie information below."
-##                        " Email me if you run into problems."),foreground='#ccffff').grid(row=1,column=1,pady=5)
 
         # Body 
         self.frame_content=ttk.Frame(master)
@@ -53,11 +50,11 @@ class GUIhtml:
         self.text_date3d.insert(END, 'in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
-        self.text_cast=Text(self.frame_content,width=75,height=2)
+        self.text_cast=Text(self.frame_content,width=75,height=2, wrap=WORD)
         self.text_cast.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
-        self.text_summary=Text(self.frame_content,width=75,height=9)
+        self.text_summary=Text(self.frame_content,width=75,height=9, wrap=WORD)
         self.text_summary.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
@@ -72,13 +69,10 @@ class GUIhtml:
         self.text_image=Text(self.frame_content,width=30,height=1)
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
         self.text_image.insert(END, '.jpg')
-        ttk.Label(self.frame_content,text='.jpg',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='w')
     
-
         # Buttons
         ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
         ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=12,column=2,padx=5,pady=5,sticky='w')
-##        ttk.Button(self.frame_content,text='Browse...',command=self.clear).grid(row=8,column=1,padx=5,pady=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
 
