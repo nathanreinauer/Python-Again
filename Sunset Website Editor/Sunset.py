@@ -45,10 +45,12 @@ class GUIhtml:
         ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
         self.text_date2d=Text(self.frame_content,width=25,height=1)
         self.text_date2d.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_date2d.insert(END, 'in 2D')
 
         ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
         self.text_date3d=Text(self.frame_content,width=25,height=1)
         self.text_date3d.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
+        self.text_date3d.insert(END, 'in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
         self.text_cast=Text(self.frame_content,width=75,height=2)
@@ -67,14 +69,16 @@ class GUIhtml:
         self.text_trailer.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
-        self.text_image=Text(self.frame_content,width=45,height=1)
-        self.text_image.grid(row=8,column=2,columnspan=2,padx=5, sticky='w')
+        self.text_image=Text(self.frame_content,width=30,height=1)
+        self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_image.insert(END, '.jpg')
+        ttk.Label(self.frame_content,text='.jpg',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='w')
     
 
         # Buttons
         ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
         ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=12,column=2,padx=5,pady=5,sticky='w')
-        ttk.Button(self.frame_content,text='Browse...',command=self.clear).grid(row=8,column=1,padx=5,pady=5,sticky='w')
+##        ttk.Button(self.frame_content,text='Browse...',command=self.clear).grid(row=8,column=1,padx=5,pady=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
 
@@ -322,12 +326,12 @@ We gladly accept Visa and Mastercard.<br><br>
 
 <img src=http://www.SunsetTheatre.com/images/Reel2.gif><br>
 <b><font color="yellow" size="5">
-{1} in 2D<br>
-{2} in 3D<br>
+{1}<br>
+{2}<br>
 
 <br>
 
-<img src=http://www.SunsetTheatre.com/images/{7}>
+<img src="http://www.SunsetTheatre.com/images/{7}">
 <font color="red" size="7">
 <br>{0}<br>
 
@@ -630,13 +634,10 @@ All information is subject to change without notice.<br>
            (self.text_runtime.get(1.0,'end')),
            (self.text_trailer.get(1.0,'end')),
            (self.text_image.get(1.0,'end')))))
-        
-        # Clears textbox after submitting
-        self.clear()
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
-                            "Success! Navigate to this script's parent directory to view your new page.")
+                            "Success! Now just upload this index.html file to the server.")
 
         # Clears textbox on Clear click
     def clear(self):
