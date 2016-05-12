@@ -4,6 +4,8 @@ from tkinter import ttk
 from tkinter import messagebox
 import os.path
 import shutil
+from bs4 import BeautifulSoup
+import requests
 
 class GUIhtml:
 
@@ -75,6 +77,21 @@ class GUIhtml:
         ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=12,column=2,padx=5,pady=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
+
+        # Get 'Past Movies' list
+    def pastMovies(self):
+        url = "http://sunsettheatre.com/"
+        response = requests.get(url)
+        soup = BeautifulSoup(response.content, "html5lib")
+        ass = []
+        font = soup.find("b", text="Past Movies:").find_next_sibling("font")
+        for event in font.find_all("b", recursive=False):
+           event_date = event.previous_sibling.strip()
+           event_text = event.get_text(strip=True)
+           yield (event_date, "<b>"+event_text+"</b><br>")
+
+        
+        
 
         # Creates and writes html file
     def createHTML(self, content):
@@ -380,22 +397,7 @@ To see what the critics think
 <FONT color="red" size="5"><b>Past Movies:</b><br>
 <FONT color=yellow size="3">
 
-January 1, 2 & 3: <b>Alvin and the Chipmunks: The Road Chip</b><br>
-January 8, 9 & 10: <b>Daddy's Home</b><br>
-January 15, 16 & 17: <b>Star Wars: The Force Awakens</b><br>
-January 22, 23 & 24: <b>Star Wars: The Force Awakens 3D</b><img src="http://www.SunsetTheatre.com/images/realdlogosmall.jpg"><br>
-January 29, 30 & 31: <b>Norm of the North</b><br>
-February 5, 6 & 7: <b>The Forest</b><br>
-February 12, 13 & 14 <b>Kung Fu Panda 3</b><br>
-February 19, 20 & 21 <b>Kung Fu Panda 3 3D</b><img src="http://www.SunsetTheatre.com/images/realdlogosmall.jpg"><br>
-February 26, 27 & 28 <b>Ride Along 2</b><br>
-March 4, 5 & 6 <b>Deadpool</b><br>
-March 11, 12 & 13 <b>Gods of Egypt</b><br>
-March 18, 19 & 20 <b>Zootopia</b><br>
-March 25, 26 & 27 <b>Zootopia 3D</b><img src="http://www.SunsetTheatre.com/images/realdlogosmall.jpg"><br>
-April 1, 2 & 3 <b>The Divergent Series: Allegiant</b><br>
-April 8, 9 & 10 <b>Miracles From Heaven</b><br>
-April 29, 30 & May 1 <b>Batman v Superman</b><br>
+{8}
 
 <br><br>
 
@@ -627,7 +629,8 @@ All information is subject to change without notice.<br>
            (self.text_summary.get(1.0,'end')),
            (self.text_runtime.get(1.0,'end')),
            (self.text_trailer.get(1.0,'end')),
-           (self.text_image.get(1.0,'end')))))
+           (self.text_image.get(1.0,'end')),
+           (self.pastMovies()))))
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
@@ -643,6 +646,7 @@ All information is subject to change without notice.<br>
         self.text_trailer.delete(1.0,'end')
         self.text_runtime.delete(1.0,'end')
         self.text_image.delete(1.0,'end')
+        self.pastMovies()
         
 # Run program          
 def main():            
