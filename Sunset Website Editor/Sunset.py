@@ -12,7 +12,7 @@ from datetime import date
 
 conn = sqlite3.connect('movielist.db')
 c = conn.cursor()
-varID = '20'
+##varID = '20'
 
 class GUIhtml:
 
@@ -59,7 +59,7 @@ class GUIhtml:
         self.text_date3d.insert(END, ' in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
-        self.text_cast=Text(self.frame_content,width=75,height=2, wrap=WORD)
+        self.text_cast=Text(self.frame_content,width=75,height=4, wrap=WORD)
         self.text_cast.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
@@ -77,58 +77,116 @@ class GUIhtml:
         ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
         self.text_image=Text(self.frame_content,width=30,height=1)
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
-        self.text_image.insert(END, '.jpg')
 
         ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
         self.text_rating=Text(self.frame_content,width=7,height=1)
         self.text_rating.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
+
+        self.contentBox = StringVar()		 
+        self.combobox = ttk.Combobox(self.frame_content, textvariable = self.contentBox, state='readonly', width=30)		  	 
+        self.combobox.grid(row=12,column=1)
+        self.combobox.config(values = self.forComboBox())
+        self.contentBox.set('Select movie:')
+
+        ttk.Button(self.frame_content, text='Import Record',command=self.buttClick).grid(row=12,column=2,padx=5,pady=5,sticky='w')
     
         # Buttons
-        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
-        ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=12,column=2,padx=5,pady=5,sticky='w')
-        ttk.Button(self.frame_content,text='Import',command=self.buttClick).grid(row=12,column=3,padx=5,pady=5,sticky='w')
+        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=13,column=1,padx=5,pady=5, sticky='e')
+        ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=13,column=2,padx=5,pady=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
 
+        # SELECT each field
+
     def getSynopsis(self):
+##        varID = self.getRecord()
+        varID = (self.contentBox.get())[0:2]
+        print (varID)
         c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getTitle(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getCast(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Actors FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getRating(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Rating FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getDates(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Dates FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getRuntime(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Runtime FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getTrailer(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Trailer FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
     def getImage(self):
+        varID = (self.contentBox.get())[0:2]
         c.execute(("SELECT Image FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
+    # Combo Box
+
+    def getRecord(self):
+        balls = self.contentBox.get()[0:2]
+        print (balls)
+        c.execute(("SELECT * FROM Movies WHERE ID ='{}'").format(balls))
+        return c.fetchall()
+
+##    def buttImport(self):
+##        varID = self.getRecord()
+
+    def forComboBox(self):
+        c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,6")
+        return c.fetchall()
+
+
+
+
+
 
     def buttClick(self):
-        synopsis = str(self.getTitle())[3:-4] # Insert field into textbox
-        self.text_title.insert(1.0, synopsis)
+
+        self.clear()
+ 
+        title = str(self.getTitle())[3:-4] # Insert field into textbox
+        self.text_title.insert(1.0, title)
 
         dates = str(self.getDates())[3:-4] # Insert field into textbox
         self.text_date2d.insert(1.0, dates)
+
+        synopsis = str(self.getSynopsis())[3:-4] # Insert field into textbox
+        self.text_summary.insert(1.0, synopsis)
+
+        cast = str(self.getCast())[3:-4] # Insert field into textbox
+        self.text_cast.insert(1.0, cast)
+
+        runtime = str(self.getRuntime())[3:-4] # Insert field into textbox
+        self.text_runtime.insert(1.0, runtime)
+
+        rating = str(self.getRating())[3:-4] # Insert field into textbox
+        self.text_rating.insert(1.0, rating)
+
+        trailer = str(self.getTrailer())[3:-4] # Insert field into textbox
+        self.text_trailer.insert(1.0, trailer)
+
+        image = str(self.getImage())[3:-4] # Insert field into textbox
+        self.text_image.insert(1.0, image)
 
         datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field
         datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year

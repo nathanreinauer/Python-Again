@@ -11,6 +11,23 @@ c = conn.cursor()
 
 
 varID = '20'
+varID2 = '21'
+
+        # Grabs info from database on 'Select' button click
+def getContent():
+    c.execute("SELECT ID, Format, Title FROM Movies WHERE ID ='{}'".format(contentBox.get()))
+    fetch = (c.fetchall())
+    return str(fetch)#[3:-4]
+
+        # Puts values in combobox
+def getValues(x):
+    c.execute("SELECT ID, Format, Title FROM Movies WHERE ID ='{}'".format(x))#(contentBox.get()))
+    fetch = (c.fetchall())
+    return str(fetch)[1:-1]
+
+
+def test():
+    print (getContent())
 
 def getSynopsis():
     c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))#.format(contentBox.get()[0:2]))
@@ -46,17 +63,17 @@ def getImage():
 
 
 def buttClick():
-    synopsis = str(getTitle())[3:-4]
+    synopsis = str(getTitle())[3:-4] # Insert field into textbox
     text_summary.insert(1.0, synopsis)
 
-    dates = str(getDates())[3:-4]
+    dates = str(getDates())[3:-4] # Insert field into textbox
     text_title.insert(1.0, dates)
 
-    datesTemp = str(getDates()).split(',', 1)[0]
-    datesEpoch = datesTemp[3:]+', ' + str(date.today().year)
-    date_time = datesEpoch
-    pattern = '%B %d, %Y'
-    epoch = int(time.mktime(time.strptime(date_time, pattern)))
+    datesTemp = str(getDates()).split(',', 1)[0] # Grab the first day from date field
+    datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year
+    date_time = datesEpoch # Not sure what this is for
+    pattern = '%B %d, %Y' # Tell python what the date format is
+    epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
     print (epoch)
 
     
@@ -74,13 +91,29 @@ text_title.grid(row=1,column=1,columnspan=3,padx=5, sticky='w')
 
 
 
-ttk.Button(text='Print Record',command=buttClick).grid(row=1,column=0,padx=5,pady=5,sticky='w')
+def getRecord():
+    c.execute(("SELECT * FROM Movies WHERE ID ='{}'").format(contentBox.get()[0:2]))
+    return c.fetchall()
+
+def buttPrint():
+    print (getRecord())
+
+def forComboBox():
+    c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,6")
+    return c.fetchall()
 
 
+contentBox = StringVar()		 
+combobox = ttk.Combobox(root, textvariable = contentBox, state='readonly', width=30)		  	 
+combobox.grid(row=0,column=0)
+combobox.config(values = forComboBox())
+contentBox.set('Select movie:')
+
+ttk.Button(text='Print Record',command=buttPrint).grid(row=1,column=0,padx=5,pady=5,sticky='w')
 
 
-
-
+print(getValues(varID))
+print(getValues(varID2))
 
 root.mainloop()
 
