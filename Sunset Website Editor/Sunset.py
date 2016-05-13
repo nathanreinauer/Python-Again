@@ -51,12 +51,12 @@ class GUIhtml:
         ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
         self.text_date2d=Text(self.frame_content,width=25,height=1)
         self.text_date2d.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
-        self.text_date2d.insert(END, ' in 2D')
+##        self.text_date2d.insert(END, ' in 2D')
 
         ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
         self.text_date3d=Text(self.frame_content,width=25,height=1)
         self.text_date3d.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
-        self.text_date3d.insert(END, ' in 3D')
+##        self.text_date3d.insert(END, ' in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
         self.text_cast=Text(self.frame_content,width=75,height=4, wrap=WORD)
@@ -88,18 +88,19 @@ class GUIhtml:
         self.combobox.config(values = self.forComboBox())
         self.contentBox.set('Select movie:')
 
-        ttk.Button(self.frame_content, text='Import Record',command=self.buttClick).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+
     
         # Buttons
         ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=13,column=1,padx=5,pady=5, sticky='e')
         ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=13,column=2,padx=5,pady=5,sticky='w')
+        ttk.Button(self.frame_content, text='Import Record',command=self.buttClick).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+        ttk.Button(self.frame_content, text='Add Record',command=self.addRecord).grid(row=12,column=3,padx=5,pady=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
 
         # SELECT each field
 
     def getSynopsis(self):
-##        varID = self.getRecord()
         varID = (self.contentBox.get())[0:2]
         print (varID)
         c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
@@ -188,6 +189,7 @@ class GUIhtml:
         image = str(self.getImage())[3:-4] # Insert field into textbox
         self.text_image.insert(1.0, image)
 
+        # Maybe put this in a different function
         datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field
         datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year
         date_time = datesEpoch # Not sure what this is for
@@ -195,7 +197,21 @@ class GUIhtml:
         epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
         print (epoch)
 
+
+
+    def addRecord(self):
+        newTitle = self.text_title.get(1.0, 'end')
+        newSynopsis = self.text_summary.get(1.0, 'end')
+        newCast = self.text_cast.get(1.0, 'end')
+        newRuntime = self.text_runtime.get(1.0, 'end')
+        newRating = self.text_rating.get(1.0, 'end')
+        newTrailer = self.text_trailer.get(1.0, 'end')
+        newDates = self.text_date2d.get(1.0, 'end')
+        newImage = self.text_image.get(1.0, 'end')
         
+        c.execute("INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}');"
+                  .format(newTitle[:-1], newSynopsis[:-1], newCast[:-1], newRuntime[:-1], newRating[:-1], newTrailer[:-1], newDates[:-1], newImage[:-1]))
+        conn.commit()   
         
 
         # Creates and writes html file

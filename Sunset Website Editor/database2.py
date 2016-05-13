@@ -26,6 +26,18 @@ def getValues(x):
     return str(fetch)[1:-1]
 
 
+
+def addRecord():
+    newTitle = text_title.get(1.0, 'end')
+    newSynopsis = text_summary.get(1.0, 'end')
+    c.execute("INSERT INTO Movies (Title, Synopsis) VALUES ('{}','{}');".format(newTitle, newSynopsis))
+    conn.commit()
+    print (newTitle + newSynopsis)
+
+
+
+
+
 def test():
     print (getContent())
 
@@ -96,7 +108,8 @@ def getRecord():
     return c.fetchall()
 
 def buttPrint():
-    print (getRecord())
+##    print (getRecord())
+    addRecord()
 
 def forComboBox():
     c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,6")
