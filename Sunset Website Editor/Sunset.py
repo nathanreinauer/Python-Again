@@ -1,12 +1,18 @@
 
-
+import sqlite3
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
+import time
+from datetime import date
 ##import os.path
 ##import shutil
 ##from bs4 import BeautifulSoup
 ##import requests
+
+conn = sqlite3.connect('movielist.db')
+c = conn.cursor()
+varID = '20'
 
 class GUIhtml:
 
@@ -45,12 +51,12 @@ class GUIhtml:
         ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
         self.text_date2d=Text(self.frame_content,width=25,height=1)
         self.text_date2d.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
-        self.text_date2d.insert(END, 'in 2D')
+        self.text_date2d.insert(END, ' in 2D')
 
         ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
         self.text_date3d=Text(self.frame_content,width=25,height=1)
         self.text_date3d.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
-        self.text_date3d.insert(END, 'in 3D')
+        self.text_date3d.insert(END, ' in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
         self.text_cast=Text(self.frame_content,width=75,height=2, wrap=WORD)
@@ -80,20 +86,56 @@ class GUIhtml:
         # Buttons
         ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
         ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+        ttk.Button(self.frame_content,text='Import',command=self.buttClick).grid(row=12,column=3,padx=5,pady=5,sticky='w')
 
 #-------------------------FUNCTIONS-------------------------#
 
-##        # Get 'Past Movies' list
-##    def pastMovies(self):
-##        url = "http://sunsettheatre.com/"
-##        response = requests.get(url)
-##        soup = BeautifulSoup(response.content, "html5lib")
-##        ass = []
-##        font = soup.find("b", text="Past Movies:").find_next_sibling("font")
-##        for event in font.find_all("b", recursive=False):
-##           event_date = event.previous_sibling.strip()
-##           event_text = event.get_text(strip=True)
-##           yield (event_date, "<b>"+event_text+"</b><br>")
+    def getSynopsis(self):
+        c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getTitle(self):
+        c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getCast(self):
+        c.execute(("SELECT Actors FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getRating(self):
+        c.execute(("SELECT Rating FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getDates(self):
+        c.execute(("SELECT Dates FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getRuntime(self):
+        c.execute(("SELECT Runtime FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getTrailer(self):
+        c.execute(("SELECT Trailer FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getImage(self):
+        c.execute(("SELECT Image FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+
+    def buttClick(self):
+        synopsis = str(self.getTitle())[3:-4] # Insert field into textbox
+        self.text_title.insert(1.0, synopsis)
+
+        dates = str(self.getDates())[3:-4] # Insert field into textbox
+        self.text_date2d.insert(1.0, dates)
+
+        datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field
+        datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year
+        date_time = datesEpoch # Not sure what this is for
+        pattern = '%B %d, %Y' # Tell python what the date format is
+        epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
+        print (epoch)
 
         
         
