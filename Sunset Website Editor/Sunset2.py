@@ -52,6 +52,8 @@ class GUIhtml:
         n.add(f4, text='Week 4')
         n.add(f5, text='Week 5')
 
+# F1 --------------------------------------------------------------------------------------------------------------------------
+
         # Header
         self.frame_header = ttk.Frame(f1)
         self.frame_header.pack()
@@ -65,61 +67,290 @@ class GUIhtml:
 
         # Labels / Text boxes / Placement
         ttk.Label(self.frame_content,text='Title',foreground='#ccffff').grid(row=3,column=0,pady=5, sticky='e')
-        self.text_title=Text(self.frame_content,width=65,height=1)
-        self.text_title.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
+        self.text_title1=Text(self.frame_content,width=65,height=1)
+        self.text_title1.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
-        self.text_date2d=Text(self.frame_content,width=25,height=1)
-        self.text_date2d.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
-        self.text_date2d.insert(END, 'in 2D')
+        self.text_date2d1=Text(self.frame_content,width=25,height=1)
+        self.text_date2d1.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_date2d1.insert(END, 'in 2D')
 
         ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
-        self.text_date3d=Text(self.frame_content,width=25,height=1)
-        self.text_date3d.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
-        self.text_date3d.insert(END, 'in 3D')
+        self.text_date3d1=Text(self.frame_content,width=25,height=1)
+        self.text_date3d1.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
+        self.text_date3d1.insert(END, 'in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
-        self.text_cast=Text(self.frame_content,width=75,height=2, wrap=WORD)
-        self.text_cast.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
+        self.text_cast1=Text(self.frame_content,width=75,height=2, wrap=WORD)
+        self.text_cast1.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
-        self.text_summary=Text(self.frame_content,width=75,height=9, wrap=WORD)
-        self.text_summary.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
+        self.text_summary1=Text(self.frame_content,width=75,height=9, wrap=WORD)
+        self.text_summary1.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
-        self.text_runtime=Text(self.frame_content,width=20,height=1)
-        self.text_runtime.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
+        self.text_runtime1=Text(self.frame_content,width=20,height=1)
+        self.text_runtime1.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ccffff').grid(row=7,column=2,pady=5, sticky='e')
-        self.text_trailer=Text(self.frame_content,width=15,height=1)
-        self.text_trailer.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
+        self.text_trailer1=Text(self.frame_content,width=15,height=1)
+        self.text_trailer1.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
 
         ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
-        self.text_image=Text(self.frame_content,width=30,height=1)
-        self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
-        self.text_image.insert(END, '.jpg')
+        self.text_image1=Text(self.frame_content,width=30,height=1)
+        self.text_image1.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_image1.insert(END, '.jpg')
 
         ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
-        self.text_rating=Text(self.frame_content,width=7,height=1)
-        self.text_rating.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
+        self.text_rating1=Text(self.frame_content,width=7,height=1)
+        self.text_rating1.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
         
         # Buttons
         ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
-        ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+        ttk.Button(self.frame_content,text='Clear All',command= lambda: self.clear(1)).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+
+# F2 --------------------------------------------------------------------------------------------------------------------------
+
+        # Header
+        self.frame_header = ttk.Frame(f2)
+        self.frame_header.pack()
+
+        # Header content
+        ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ccffff').grid(row=0,column=1,pady=5)
+
+        # Body 
+        self.frame_content=ttk.Frame(f2)
+        self.frame_content.pack()
+
+        # Labels / Text boxes / Placement
+        ttk.Label(self.frame_content,text='Title',foreground='#ccffff').grid(row=3,column=0,pady=5, sticky='e')
+        self.text_title2=Text(self.frame_content,width=65,height=1)
+        self.text_title2.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
+        self.text_date2d2=Text(self.frame_content,width=25,height=1)
+        self.text_date2d2.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_date2d2.insert(END, 'in 2D')
+
+        ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
+        self.text_date3d2=Text(self.frame_content,width=25,height=1)
+        self.text_date3d2.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
+        self.text_date3d2.insert(END, 'in 3D')
+
+        ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
+        self.text_cast2=Text(self.frame_content,width=75,height=2, wrap=WORD)
+        self.text_cast2.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
+        self.text_summary2=Text(self.frame_content,width=75,height=9, wrap=WORD)
+        self.text_summary2.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
+        self.text_runtime2=Text(self.frame_content,width=20,height=1)
+        self.text_runtime2.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ccffff').grid(row=7,column=2,pady=5, sticky='e')
+        self.text_trailer2=Text(self.frame_content,width=15,height=1)
+        self.text_trailer2.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
+        self.text_image2=Text(self.frame_content,width=30,height=1)
+        self.text_image2.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_image2.insert(END, '.jpg')
+
+        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        self.text_rating2=Text(self.frame_content,width=7,height=1)
+        self.text_rating2.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
+        
+        # Buttons
+        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
+        ttk.Button(self.frame_content,text='Clear All',command= lambda: self.clear(2)).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+
+# F3 --------------------------------------------------------------------------------------------------------------------------
+
+        # Header
+        self.frame_header = ttk.Frame(f3)
+        self.frame_header.pack()
+
+        # Header content
+        ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ccffff').grid(row=0,column=1,pady=5)
+
+        # Body 
+        self.frame_content=ttk.Frame(f3)
+        self.frame_content.pack()
+
+        # Labels / Text boxes / Placement
+        ttk.Label(self.frame_content,text='Title',foreground='#ccffff').grid(row=3,column=0,pady=5, sticky='e')
+        self.text_title3=Text(self.frame_content,width=65,height=1)
+        self.text_title3.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
+        self.text_date2d3=Text(self.frame_content,width=25,height=1)
+        self.text_date2d3.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_date2d3.insert(END, 'in 2D')
+
+        ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
+        self.text_date3d3=Text(self.frame_content,width=25,height=1)
+        self.text_date3d3.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
+        self.text_date3d3.insert(END, 'in 3D')
+
+        ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
+        self.text_cast3=Text(self.frame_content,width=75,height=2, wrap=WORD)
+        self.text_cast3.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
+        self.text_summary3=Text(self.frame_content,width=75,height=9, wrap=WORD)
+        self.text_summary3.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
+        self.text_runtime3=Text(self.frame_content,width=20,height=1)
+        self.text_runtime3.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ccffff').grid(row=7,column=2,pady=5, sticky='e')
+        self.text_trailer3=Text(self.frame_content,width=15,height=1)
+        self.text_trailer3.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
+        self.text_image3=Text(self.frame_content,width=30,height=1)
+        self.text_image3.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_image3.insert(END, '.jpg')
+
+        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        self.text_rating3=Text(self.frame_content,width=7,height=1)
+        self.text_rating3.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
+        
+        # Buttons
+        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
+        ttk.Button(self.frame_content,text='Clear All',command= lambda: self.clear(3)).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+
+# F4 --------------------------------------------------------------------------------------------------------------------------
+
+        # Header
+        self.frame_header = ttk.Frame(f4)
+        self.frame_header.pack()
+
+        # Header content
+        ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ccffff').grid(row=0,column=1,pady=5)
+
+        # Body 
+        self.frame_content=ttk.Frame(f4)
+        self.frame_content.pack()
+
+        # Labels / Text boxes / Placement
+        ttk.Label(self.frame_content,text='Title',foreground='#ccffff').grid(row=3,column=0,pady=5, sticky='e')
+        self.text_title4=Text(self.frame_content,width=65,height=1)
+        self.text_title4.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
+        self.text_date2d4=Text(self.frame_content,width=25,height=1)
+        self.text_date2d4.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_date2d4.insert(END, 'in 2D')
+
+        ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
+        self.text_date3d4=Text(self.frame_content,width=25,height=1)
+        self.text_date3d4.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
+        self.text_date3d4.insert(END, 'in 3D')
+
+        ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
+        self.text_cast4=Text(self.frame_content,width=75,height=2, wrap=WORD)
+        self.text_cast4.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
+        self.text_summary4=Text(self.frame_content,width=75,height=9, wrap=WORD)
+        self.text_summary4.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
+        self.text_runtime4=Text(self.frame_content,width=20,height=1)
+        self.text_runtime4.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ccffff').grid(row=7,column=2,pady=5, sticky='e')
+        self.text_trailer4=Text(self.frame_content,width=15,height=1)
+        self.text_trailer4.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
+        self.text_image4=Text(self.frame_content,width=30,height=1)
+        self.text_image4.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_image4.insert(END, '.jpg')
+
+        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        self.text_rating4=Text(self.frame_content,width=7,height=1)
+        self.text_rating4.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
+        
+        # Buttons
+        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
+        ttk.Button(self.frame_content,text='Clear All',command= lambda: self.clear(4)).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+
+# F5 --------------------------------------------------------------------------------------------------------------------------
+
+        # Header
+        self.frame_header = ttk.Frame(f5)
+        self.frame_header.pack()
+
+        # Header content
+        ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ccffff').grid(row=0,column=1,pady=5)
+
+        # Body 
+        self.frame_content=ttk.Frame(f5)
+        self.frame_content.pack()
+
+        # Labels / Text boxes / Placement
+        ttk.Label(self.frame_content,text='Title',foreground='#ccffff').grid(row=3,column=0,pady=5, sticky='e')
+        self.text_title5=Text(self.frame_content,width=65,height=1)
+        self.text_title5.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='2D Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
+        self.text_date2d5=Text(self.frame_content,width=25,height=1)
+        self.text_date2d5.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_date2d5.insert(END, 'in 2D')
+
+        ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
+        self.text_date3d5=Text(self.frame_content,width=25,height=1)
+        self.text_date3d5.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
+        self.text_date3d5.insert(END, 'in 3D')
+
+        ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
+        self.text_cast5=Text(self.frame_content,width=75,height=2, wrap=WORD)
+        self.text_cast5.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
+        self.text_summary5=Text(self.frame_content,width=75,height=9, wrap=WORD)
+        self.text_summary5.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
+        self.text_runtime5=Text(self.frame_content,width=20,height=1)
+        self.text_runtime5.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ccffff').grid(row=7,column=2,pady=5, sticky='e')
+        self.text_trailer5=Text(self.frame_content,width=15,height=1)
+        self.text_trailer5.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
+
+        ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
+        self.text_image5=Text(self.frame_content,width=30,height=1)
+        self.text_image5.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
+        self.text_image5.insert(END, '.jpg')
+
+        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        self.text_rating5=Text(self.frame_content,width=7,height=1)
+        self.text_rating5.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
+        
+        # Buttons
+        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
+        ttk.Button(self.frame_content,text='Clear All',command= lambda: self.clear(5)).grid(row=12,column=2,padx=5,pady=5,sticky='w')
+        
 
 #-------------------------FUNCTIONS-------------------------#
 
-        # Get 'Past Movies' list
-    def pastMovies(self):
-        url = "http://sunsettheatre.com/"
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, "html5lib")
-        ass = []
-        font = soup.find("b", text="Past Movies:").find_next_sibling("font")
-        for event in font.find_all("b", recursive=False):
-           event_date = event.previous_sibling.strip()
-           event_text = event.get_text(strip=True)
-           yield (event_date, "<b>"+event_text+"</b><br>")
+##        # Get 'Past Movies' list
+##    def pastMovies(self):
+##        url = "http://sunsettheatre.com/"
+##        response = requests.get(url)
+##        soup = BeautifulSoup(response.content, "html5lib")
+##        ass = []
+##        font = soup.find("b", text="Past Movies:").find_next_sibling("font")
+##        for event in font.find_all("b", recursive=False):
+##           event_date = event.previous_sibling.strip()
+##           event_text = event.get_text(strip=True)
+##           yield (event_date, "<b>"+event_text+"</b><br>")
 
         
         
@@ -661,23 +892,66 @@ All information is subject to change without notice.<br>
            (self.text_runtime.get(1.0,'end')),
            (self.text_trailer.get(1.0,'end')),
            (self.text_image.get(1.0,'end')),
-           (self.pastMovies()))))
+           (self.text_rating.get(1.0,'end')))))
+        
+##           (self.pastMovies()))))
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
 
         # Clears textbox on Clear click
-    def clear(self):
-        self.text_title.delete(1.0,'end')
-        self.text_cast.delete(1.0,'end')
-        self.text_date2d.delete(1.0,'end')
-        self.text_date3d.delete(1.0,'end')
-        self.text_summary.delete(1.0,'end')
-        self.text_trailer.delete(1.0,'end')
-        self.text_runtime.delete(1.0,'end')
-        self.text_image.delete(1.0,'end')
-        self.pastMovies()
+    def clear(self,x):
+        if x == 1:
+            self.text_title1.delete(1.0,'end')
+            self.text_cast1.delete(1.0,'end')
+            self.text_date2d1.delete(1.0,'end')
+            self.text_date3d1.delete(1.0,'end')
+            self.text_summary1.delete(1.0,'end')
+            self.text_trailer1.delete(1.0,'end')
+            self.text_runtime1.delete(1.0,'end')
+            self.text_image1.delete(1.0,'end')
+            self.text_rating1.delete(1.0,'end')
+        if x == 2:
+            self.text_title2.delete(1.0,'end')
+            self.text_cast2.delete(1.0,'end')
+            self.text_date2d2.delete(1.0,'end')
+            self.text_date3d2.delete(1.0,'end')
+            self.text_summary2.delete(1.0,'end')
+            self.text_trailer2.delete(1.0,'end')
+            self.text_runtime2.delete(1.0,'end')
+            self.text_image2.delete(1.0,'end')
+            self.text_rating2.delete(1.0,'end')
+        if x == 3:
+            self.text_title3.delete(1.0,'end')
+            self.text_cast3.delete(1.0,'end')
+            self.text_date2d3.delete(1.0,'end')
+            self.text_date3d3.delete(1.0,'end')
+            self.text_summary3.delete(1.0,'end')
+            self.text_trailer3.delete(1.0,'end')
+            self.text_runtime3.delete(1.0,'end')
+            self.text_image3.delete(1.0,'end')
+            self.text_rating3.delete(1.0,'end')
+        if x == 4:
+            self.text_title4.delete(1.0,'end')
+            self.text_cast4.delete(1.0,'end')
+            self.text_date2d4.delete(1.0,'end')
+            self.text_date3d4.delete(1.0,'end')
+            self.text_summary4.delete(1.0,'end')
+            self.text_trailer4.delete(1.0,'end')
+            self.text_runtime4.delete(1.0,'end')
+            self.text_image4.delete(1.0,'end')
+            self.text_rating4.delete(1.0,'end')
+        else:
+            self.text_title5.delete(1.0,'end')
+            self.text_cast5.delete(1.0,'end')
+            self.text_date2d5.delete(1.0,'end')
+            self.text_date3d5.delete(1.0,'end')
+            self.text_summary5.delete(1.0,'end')
+            self.text_trailer5.delete(1.0,'end')
+            self.text_runtime5.delete(1.0,'end')
+            self.text_image5.delete(1.0,'end')
+            self.text_rating5.delete(1.0,'end')
         
 # Run program          
 def main():            
