@@ -1,11 +1,12 @@
 
+
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-import os.path
-import shutil
-from bs4 import BeautifulSoup
-import requests
+##import os.path
+##import shutil
+##from bs4 import BeautifulSoup
+##import requests
 
 class GUIhtml:
 
@@ -71,6 +72,10 @@ class GUIhtml:
         self.text_image=Text(self.frame_content,width=30,height=1)
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
         self.text_image.insert(END, '.jpg')
+
+        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        self.text_rating=Text(self.frame_content,width=7,height=1)
+        self.text_rating.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
     
         # Buttons
         ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=12,column=1,padx=5,pady=5, sticky='e')
@@ -78,17 +83,17 @@ class GUIhtml:
 
 #-------------------------FUNCTIONS-------------------------#
 
-        # Get 'Past Movies' list
-    def pastMovies(self):
-        url = "http://sunsettheatre.com/"
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, "html5lib")
-        ass = []
-        font = soup.find("b", text="Past Movies:").find_next_sibling("font")
-        for event in font.find_all("b", recursive=False):
-           event_date = event.previous_sibling.strip()
-           event_text = event.get_text(strip=True)
-           yield (event_date, "<b>"+event_text+"</b><br>")
+##        # Get 'Past Movies' list
+##    def pastMovies(self):
+##        url = "http://sunsettheatre.com/"
+##        response = requests.get(url)
+##        soup = BeautifulSoup(response.content, "html5lib")
+##        ass = []
+##        font = soup.find("b", text="Past Movies:").find_next_sibling("font")
+##        for event in font.find_all("b", recursive=False):
+##           event_date = event.previous_sibling.strip()
+##           event_text = event.get_text(strip=True)
+##           yield (event_date, "<b>"+event_text+"</b><br>")
 
         
         
@@ -630,7 +635,8 @@ All information is subject to change without notice.<br>
            (self.text_runtime.get(1.0,'end')),
            (self.text_trailer.get(1.0,'end')),
            (self.text_image.get(1.0,'end')),
-           (self.pastMovies()))))
+           (self.text_rating.get(1.0,'end')))))
+##           (self.pastMovies()))))
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
@@ -646,7 +652,7 @@ All information is subject to change without notice.<br>
         self.text_trailer.delete(1.0,'end')
         self.text_runtime.delete(1.0,'end')
         self.text_image.delete(1.0,'end')
-        self.pastMovies()
+        self.text_rating.delete(1.0,'end')
         
 # Run program          
 def main():            
