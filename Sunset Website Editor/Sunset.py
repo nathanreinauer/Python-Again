@@ -98,11 +98,10 @@ class GUIhtml:
 
 #-------------------------FUNCTIONS-------------------------#
 
-        # SELECT each field
+        # SELECT each field from a record in DB
 
     def getSynopsis(self):
-        varID = (self.contentBox.get())[0:2]
-        print (varID)
+        varID = (self.contentBox.get())[0:2]#Currently this line grabs record based on combobox
         c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
@@ -160,7 +159,7 @@ class GUIhtml:
 
 
 
-    # Grab from DB and put into text fields
+    # "Import" button -- Gets DB records from "getTitle", etc. and puts them into text fields
     def buttClick(self):
 
         self.clear()
@@ -188,29 +187,78 @@ class GUIhtml:
 
         image = str(self.getImage())[3:-4] # Insert field into textbox
         self.text_image.insert(1.0, image)
-        
+
+        # Test for newMovies() function, has nothing to do with this button click
+        self.newMovieVar()
+
+    # Converts DB dates into Epoch 
     def getEpoch(self): 
-        datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field
-        datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year
+        datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field, eg. "May 12"
+        datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year (change to combobox later?)
         date_time = datesEpoch # Not sure what this is for
         pattern = '%B %d, %Y' # Tell python what the date format is
         epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
         print (epoch)
 
 
+    # Figures out upcoming movies in DB
+    def newMovies(self):
+        epochNow = int(time.time())
+        epochNow = epochNow - 432000
+        c.execute('SELECT ID FROM Movies WHERE Epoch > {};'.format(epochNow))
+        return c.fetchall()
 
+    # Extracts ID numbers from string resulting from newMovies()
+    def newMovieVar(self):
+        movieVar1 = str(self.newMovies())[2:4]
+        movieVar2 = str(self.newMovies())[9:11]
+        movieVar3 = str(self.newMovies())[16:18]
+        movieVar4 = str(self.newMovies())[23:25]
+        movieVar5 = str(self.newMovies())[30:32]
+        # Figures out how many (out of 5 possible) upcoming movies there are
+        if movieVar1 != '':
+            print ("Yes "+movieVar1)
+        else:
+            print ("No")
+            
+        if movieVar2 != '':
+            print ("Yes "+movieVar2)
+        else:
+            print ("No")
+            
+        if movieVar3 != '':
+            print ("Yes "+movieVar3)
+        else:
+            print ("No")
+            
+        if movieVar4 != '':
+            print ("Yes "+movieVar4)
+        else:
+            print ("No")
+
+        if movieVar5 != '':
+            print ("Yes "+movieVar5)
+        else:
+            print ("No")
+
+
+        
+##        print (movieVar1, movieVar2, movieVar3, movieVar4, movieVar5)
+
+
+    # Adds records into DB from text fields
     def addRecord(self):
-        newTitle = self.text_title.get(1.0, 'end')
-        newSynopsis = self.text_summary.get(1.0, 'end')
-        newCast = self.text_cast.get(1.0, 'end')
-        newRuntime = self.text_runtime.get(1.0, 'end')
-        newRating = self.text_rating.get(1.0, 'end')
-        newTrailer = self.text_trailer.get(1.0, 'end')
-        newDates = self.text_date2d.get(1.0, 'end')
-        newImage = self.text_image.get(1.0, 'end')
+        newTitle = self.text_title.get("1.0", 'end-1c')
+        newSynopsis = self.text_summary.get("1.0", 'end-1c')
+        newCast = self.text_cast.get("1.0", 'end-1c')
+        newRuntime = self.text_runtime.get("1.0", 'end-1c')
+        newRating = self.text_rating.get("1.0", 'end-1c')
+        newTrailer = self.text_trailer.get("1.0", 'end-1c')
+        newDates = self.text_date2d.get("1.0", 'end-1c')
+        newImage = self.text_image.get("1.0", 'end-1c')
         
         c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}");'
-                  .format(newTitle[:-1], newSynopsis[:-1], newCast[:-1], newRuntime[:-1], newRating[:-1], newTrailer[:-1], newDates[:-1], newImage[:-1]))
+                  .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage))
         conn.commit()
         self.addChunk1()
 
@@ -231,31 +279,14 @@ class GUIhtml:
     # Grabs record of whatever movie combobox is set to, and plugs it into HTML chunk
     # Try to make it grab the last few movies in DB, regardless of combobox
     def addChunk1(self):
-
-        title = str(self.getTitle())[3:-4] # Insert field into textbox
-##        self.text_title.insert(1.0, title)
-
-        dates = str(self.getDates())[3:-4] # Insert field into textbox
-##        self.text_date2d.insert(1.0, dates)
-
-        synopsis = str(self.getSynopsis())[3:-4] # Insert field into textbox
-##        self.text_summary.insert(1.0, synopsis)
-
-        cast = str(self.getCast())[3:-4] # Insert field into textbox
-##        self.text_cast.insert(1.0, cast)
-
-        runtime = str(self.getRuntime())[3:-4] # Insert field into textbox
-##        self.text_runtime.insert(1.0, runtime)
-
-        rating = str(self.getRating())[3:-4] # Insert field into textbox
-##        self.text_rating.insert(1.0, rating)
-
-        trailer = str(self.getTrailer())[3:-4] # Insert field into textbox
-##        self.text_trailer.insert(1.0, trailer)
-
-        image = str(self.getImage())[3:-4] # Insert field into textbox
-##        self.text_image.insert(1.0, image)
-        
+        title = str(self.getTitle())[3:-4]
+        dates = str(self.getDates())[3:-4]
+        synopsis = str(self.getSynopsis())[3:-4]
+        cast = str(self.getCast())[3:-4]
+        runtime = str(self.getRuntime())[3:-4]
+        rating = str(self.getRating())[3:-4] 
+        trailer = str(self.getTrailer())[3:-4] 
+        image = str(self.getImage())[3:-4]        
         newChunk = self.chunk.format((title),
            (dates),
            (dates),
