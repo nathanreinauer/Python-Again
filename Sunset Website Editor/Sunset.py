@@ -160,7 +160,7 @@ class GUIhtml:
 
 
 
-
+    # Grab from DB and put into text fields
     def buttClick(self):
 
         self.clear()
@@ -188,8 +188,8 @@ class GUIhtml:
 
         image = str(self.getImage())[3:-4] # Insert field into textbox
         self.text_image.insert(1.0, image)
-
-        # Maybe put this in a different function
+        
+    def getEpoch(self): 
         datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field
         datesEpoch = datesTemp[3:]+', ' + str(date.today().year) # Slice the ends off and add current year
         date_time = datesEpoch # Not sure what this is for
@@ -214,18 +214,60 @@ class GUIhtml:
         conn.commit()
         self.addChunk1()
 
+##    def addChunk1(self):
+##        newChunk = self.chunk.format((self.text_title.get(1.0,'end')),
+##           (self.text_date2d.get(1.0,'end')),
+##           (self.text_date3d.get(1.0,'end')),
+##           (self.text_cast.get(1.0,'end')),
+##           (self.text_summary.get(1.0,'end')),
+##           (self.text_runtime.get(1.0,'end')),
+##           (self.text_trailer.get(1.0,'end')),
+##           (self.text_image.get(1.0,'end')),
+##           (self.text_rating.get(1.0,'end')))
+##        print (newChunk)
+##        return str(newChunk)
+
+
+    # Grabs record of whatever movie combobox is set to, and plugs it into HTML chunk
+    # Try to make it grab the last few movies in DB, regardless of combobox
     def addChunk1(self):
-        newChunk = self.chunk.format((self.text_title.get(1.0,'end')),
-           (self.text_date2d.get(1.0,'end')),
-           (self.text_date3d.get(1.0,'end')),
-           (self.text_cast.get(1.0,'end')),
-           (self.text_summary.get(1.0,'end')),
-           (self.text_runtime.get(1.0,'end')),
-           (self.text_trailer.get(1.0,'end')),
-           (self.text_image.get(1.0,'end')),
-           (self.text_rating.get(1.0,'end')))
+
+        title = str(self.getTitle())[3:-4] # Insert field into textbox
+##        self.text_title.insert(1.0, title)
+
+        dates = str(self.getDates())[3:-4] # Insert field into textbox
+##        self.text_date2d.insert(1.0, dates)
+
+        synopsis = str(self.getSynopsis())[3:-4] # Insert field into textbox
+##        self.text_summary.insert(1.0, synopsis)
+
+        cast = str(self.getCast())[3:-4] # Insert field into textbox
+##        self.text_cast.insert(1.0, cast)
+
+        runtime = str(self.getRuntime())[3:-4] # Insert field into textbox
+##        self.text_runtime.insert(1.0, runtime)
+
+        rating = str(self.getRating())[3:-4] # Insert field into textbox
+##        self.text_rating.insert(1.0, rating)
+
+        trailer = str(self.getTrailer())[3:-4] # Insert field into textbox
+##        self.text_trailer.insert(1.0, trailer)
+
+        image = str(self.getImage())[3:-4] # Insert field into textbox
+##        self.text_image.insert(1.0, image)
+        
+        newChunk = self.chunk.format((title),
+           (dates),
+           (dates),
+           (cast),
+           (synopsis),
+           (runtime),
+           (trailer),
+           (image),
+           (rating))
         print (newChunk)
         return str(newChunk)
+
 
         # Creates and writes html file
     def createHTML(self, content):
