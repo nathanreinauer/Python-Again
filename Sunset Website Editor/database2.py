@@ -112,7 +112,7 @@ def buttPrint():
     addRecord()
 
 def forComboBox():
-    c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,6")
+    c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,10")
     return c.fetchall()
 
 

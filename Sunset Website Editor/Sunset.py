@@ -153,7 +153,7 @@ class GUIhtml:
 ##        varID = self.getRecord()
 
     def forComboBox(self):
-        c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,6")
+        c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,9")
         return c.fetchall()
 
 
@@ -209,10 +209,23 @@ class GUIhtml:
         newDates = self.text_date2d.get(1.0, 'end')
         newImage = self.text_image.get(1.0, 'end')
         
-        c.execute("INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image) VALUES ('{}','{}','{}','{}','{}','{}','{}','{}');"
+        c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}");'
                   .format(newTitle[:-1], newSynopsis[:-1], newCast[:-1], newRuntime[:-1], newRating[:-1], newTrailer[:-1], newDates[:-1], newImage[:-1]))
-        conn.commit()   
-        
+        conn.commit()
+        self.addChunk1()
+
+    def addChunk1(self):
+        newChunk = self.chunk.format((self.text_title.get(1.0,'end')),
+           (self.text_date2d.get(1.0,'end')),
+           (self.text_date3d.get(1.0,'end')),
+           (self.text_cast.get(1.0,'end')),
+           (self.text_summary.get(1.0,'end')),
+           (self.text_runtime.get(1.0,'end')),
+           (self.text_trailer.get(1.0,'end')),
+           (self.text_image.get(1.0,'end')),
+           (self.text_rating.get(1.0,'end')))
+        print (newChunk)
+        return str(newChunk)
 
         # Creates and writes html file
     def createHTML(self, content):
@@ -451,42 +464,7 @@ We gladly accept Visa and Mastercard.<br><br>
 <hr>
 
 
-
-
-
-
-
-<img src=http://www.SunsetTheatre.com/images/Reel2.gif><br>
-<b><font color="yellow" size="5">
-{1}<br>
-{2}<br>
-
-<br>
-
-<img src="http://www.SunsetTheatre.com/images/{7}">
-<font color="red" size="7">
-<br>{0}<br>
-
-<img src="http://www.SunsetTheatre.com/images/dlp.png">
-<img src="http://www.SunsetTheatre.com/images/spacer.jpg"><img src="http://www.SunsetTheatre.com/images/dolby7.1.jpg">
-
-<FONT color=yellow size=3>
-</b><br><b>
-
-{3}
-
-</b><br><br>
-
-{4}<br><br> 
-
-<img src="http://www.SunsetTheatre.com/images/PG.jpg"><br>
-Running Time: {5}
-<br><br>
-
-<a href="https://www.youtube.com/watch?v={6}" target="_blank"><img src="http://www.SunsetTheatre.com/images/watchtrailer.jpg" border="no"></a>
-<img src="http://www.SunsetTheatre.com/images/spacer.jpg">
-<a href="https://www.dealflicks.com/theaters/sunset-theatre-and-video" target="_blank"><img src="http://www.SunsetTheatre.com/images/buyticketssmall.gif" border="no"></a><br>
-<hr>
+{0}
 
 
 
@@ -518,7 +496,7 @@ To see what the critics think
 <FONT color="red" size="5"><b>Past Movies:</b><br>
 <FONT color=yellow size="3">
 
-{8}
+
 
 <br><br>
 
@@ -743,15 +721,7 @@ All information is subject to change without notice.<br>
 </font>
 </body>
 </html>
-'''.format((self.text_title.get(1.0,'end')),
-           (self.text_date2d.get(1.0,'end')),
-           (self.text_date3d.get(1.0,'end')),
-           (self.text_cast.get(1.0,'end')),
-           (self.text_summary.get(1.0,'end')),
-           (self.text_runtime.get(1.0,'end')),
-           (self.text_trailer.get(1.0,'end')),
-           (self.text_image.get(1.0,'end')),
-           (self.text_rating.get(1.0,'end')))))
+'''.format(self.addChunk1())))
 ##           (self.pastMovies()))))
 
         # Confirmation of submission via dialog box
@@ -769,6 +739,40 @@ All information is subject to change without notice.<br>
         self.text_runtime.delete(1.0,'end')
         self.text_image.delete(1.0,'end')
         self.text_rating.delete(1.0,'end')
+
+    chunk = ('''
+<img src=http://www.SunsetTheatre.com/images/Reel2.gif><br>
+<b><font color="yellow" size="5">
+{1}<br>
+{2}<br>
+
+<br>
+
+<img src="http://www.SunsetTheatre.com/images/{7}">
+<font color="red" size="7">
+<br>{0}<br>
+
+<img src="http://www.SunsetTheatre.com/images/dlp.png">
+<img src="http://www.SunsetTheatre.com/images/spacer.jpg"><img src="http://www.SunsetTheatre.com/images/dolby7.1.jpg">
+
+<FONT color=yellow size=3>
+</b><br><b>
+
+{3}
+
+</b><br><br>
+
+{4}<br><br> 
+
+<img src="http://www.SunsetTheatre.com/images/PG.jpg"><br>
+Running Time: {5}
+<br><br>
+
+<a href="https://www.youtube.com/watch?v={6}" target="_blank"><img src="http://www.SunsetTheatre.com/images/watchtrailer.jpg" border="no"></a>
+<img src="http://www.SunsetTheatre.com/images/spacer.jpg">
+<a href="https://www.dealflicks.com/theaters/sunset-theatre-and-video" target="_blank"><img src="http://www.SunsetTheatre.com/images/buyticketssmall.gif" border="no"></a><br>
+<hr>
+''')
         
 # Run program          
 def main():            
