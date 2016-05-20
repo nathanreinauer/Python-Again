@@ -92,9 +92,14 @@ class GUIhtml:
         s.configure('Wild.TRadiobutton',background='#009999',foreground='#ccffff')
 
         self.v = IntVar()
-        self.radio2d=ttk.Radiobutton(self.frame_content, text="2D", style='Wild.TRadiobutton', variable=self.v, value=1, command=self.selected).grid(row=4,column=2,sticky='e')
-        self.radio3d=ttk.Radiobutton(self.frame_content, text="3D", style='Wild.TRadiobutton', variable=self.v, value=2, command=self.selected).grid(row=4,column=3,sticky='w')
+        self.radio2d=ttk.Radiobutton(self.frame_content, text="2D", style='Wild.TRadiobutton', variable=self.v, value=1, command=self.selected).grid(row=4,column=3,sticky='w')
+        self.radio3d=ttk.Radiobutton(self.frame_content, text="3D", style='Wild.TRadiobutton', variable=self.v, value=2, command=self.selected).grid(row=4,column=3,sticky='')
         self.v.set(1)
+
+        self.v2 = IntVar()
+        self.radio2d=ttk.Radiobutton(self.frame_content, text="Dolby 5.1", style='Wild.TRadiobutton', variable=self.v2, value=1, command=self.selected2).grid(row=4,column=2,padx=10,sticky='w')
+        self.radio3d=ttk.Radiobutton(self.frame_content, text="Dolby 7.1", style='Wild.TRadiobutton', variable=self.v2, value=2, command=self.selected2).grid(row=4,column=2,padx=35,sticky='e')
+        self.v2.set(1)
 
         self.var = StringVar()
         self.var.set(str(date.today().year))
@@ -110,12 +115,19 @@ class GUIhtml:
 
 #-------------------------FUNCTIONS-------------------------#
 
+    # Radio Button functions
     def selected(self):
         return(self.v.get())
 
-        
+    def selected2(self):
+        return(self.v2.get())
 
         # SELECT each field from a record in DB (based on what's in combobox)
+
+    def getSound(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
 
     def getSynopsis(self):
         varID = (self.contentBox.get()).split(' ', 1)[0]#Currently this line grabs record based on combobox
@@ -211,6 +223,11 @@ class GUIhtml:
         else:
             self.v.set(1)
 
+        sound = str(self.getSound())[3:-4]
+        if sound == 'Dolby 7.1':
+            self.v2.set(2)
+        else:
+            self.v2.set(1)
 
 
     # Converts TEXBOX dates into Epoch
@@ -222,12 +239,6 @@ class GUIhtml:
         epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
         return (epoch)
         print (datesEpoch)
-
-    # Figure out when one movie should have two dates (2D and 3D)
-    def findFormat():
-        epochNow = int(time.time())
-        epochNow = epochNow - 432000
-        c.execute('SELECT ID FROM Movies WHERE Epoch > {};'.format(epochNow))
 
     # Figures out upcoming movies in DB
     def newMovies(self):
@@ -290,6 +301,7 @@ class GUIhtml:
         c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch < {};".format(epochNow))
         return c.fetchall()
 
+    # This cuts up the string that comes from the DB and adds it to HTML
     # Eventually get current year instead of hardcoding "(2016)"
     def listPastMovies(self):
         x = str(self.getPastMovies())
@@ -299,18 +311,12 @@ class GUIhtml:
         pastList3 = pastList2.replace(" (2016)', \"",": <b>").replace("\"), ('", "</b><br>")
         pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
 
-##        print (x)
-##        print (pastList4)
         return (pastList4)
-
-##    def listPastMovies(self):
-##        pastList 
-
         
     # Re-order table to make sure the newest movies are always at the end
     def sortTable(self):
-        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT);')
-        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating FROM Movies ORDER BY Epoch;')
+        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT);')
+        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound FROM Movies ORDER BY Epoch;')
         c.execute('DROP TABLE Movies;')
         c.execute('ALTER TABLE Ordered RENAME TO Movies;')
 
@@ -332,10 +338,14 @@ class GUIhtml:
             else:
                 newFormat = "2D"
             newEpoch = (self.addEpoch())
+            if self.selected2() == 2:
+                newSound = "Dolby 7.1"
+            else:
+                newSound = "Dolby 5.1"
             
             
-            c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{});'
-                      .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch))
+            c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}");'
+                      .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound))
             conn.commit()
         except sqlite3.IntegrityError:
                 print ("There is already a movie scheduled for those days!")
@@ -344,6 +354,7 @@ class GUIhtml:
     # Grabs record of recent movies and plugs it into HTML chunk, does some trickery to combine 2D and 3D movies
     # 2D and 3D have to be next to each other in DB to work
     def addChunk1(self, x):
+        sound = str(self.latestSound(x))[9:-6]
         if str(self.latestFormat(x))[3:-4] == '2D':
             dates = ((str(self.latestDates(x))[3:-10]))
             dates3d = ''
@@ -380,7 +391,8 @@ class GUIhtml:
             (trailer),
             (image),
             (rating),
-            (reald))
+            (reald),
+            (sound))
         if title == '':
             return ''
             
@@ -612,6 +624,28 @@ class GUIhtml:
         else:
             varID = (self.newMovieVar(5))
             c.execute(("SELECT Epoch FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+
+    def latestSound(self, x):
+        if x == 1:
+            varID = (self.newMovieVar(1))
+            c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        elif x == 2:
+            varID = (self.newMovieVar(2))
+            c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        elif x == 3:
+            varID = (self.newMovieVar(3))
+            c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        elif x == 4:
+            varID = (self.newMovieVar(4))
+            c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        else:
+            varID = (self.newMovieVar(5))
+            c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
             return c.fetchall()  
 
 
@@ -1148,7 +1182,7 @@ All information is subject to change without notice.<br>
 <br>{0}<br>
 
 <img src="http://www.SunsetTheatre.com/images/dlp.png">
-<img src="http://www.SunsetTheatre.com/images/spacer.jpg"><img src="http://www.SunsetTheatre.com/images/dolby7.1.jpg">{9}
+<img src="http://www.SunsetTheatre.com/images/spacer.jpg"><img src="http://www.SunsetTheatre.com/images/dolby{10}.1.jpg">{9}
 
 <FONT color=yellow size=3>
 </b><br><b>
