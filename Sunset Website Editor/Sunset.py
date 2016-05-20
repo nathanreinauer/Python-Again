@@ -116,8 +116,6 @@ class GUIhtml:
         
 
         # SELECT each field from a record in DB (based on what's in combobox)
-        # Need to add EPOCH to combobox, and make the following functions grab that instead of ID
-        # OR have it grab the first part of combobox up to the first space (which would be ID, regardless of digits)
 
     def getSynopsis(self):
         varID = (self.contentBox.get()).split(' ', 1)[0]#Currently this line grabs record based on combobox
@@ -184,7 +182,6 @@ class GUIhtml:
 
 
     # "Import" button -- Gets DB records from "getTitle", etc. and puts them into text fields
-    # Make it change the radiobutton and spinbox as well
     def buttClick(self):
 
         self.clear()
@@ -222,20 +219,8 @@ class GUIhtml:
             self.v.set(2)
         else:
             self.v.set(1)
-            
-
-        # Test for newMovies() function, has nothing to do with this button click
 
 
-##    # Converts DB dates into Epoch 
-##    def getEpoch(self): 
-##        datesTemp = str(self.getDates()).split(',', 1)[0] # Grab the first day from date field, eg. "May 12"
-##        datesEpoch = datesTemp[3:]+', ' + str(self.spin.get())#str(date.today().year) # Slice the ends off and add current year (change to combobox later?)
-##        date_time = datesEpoch # Not sure what this is for
-##        pattern = '%B %d, %Y' # Tell python what the date format is
-##        epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
-##        print (epoch)
-##        print (datesEpoch)
 
     # Converts TEXBOX dates into Epoch
     def addEpoch(self): 
@@ -247,6 +232,12 @@ class GUIhtml:
         return (epoch)
         print (datesEpoch)
 
+    # Figure out when one movie should have two dates (2D and 3D)
+    def findFormat():
+        epochNow = int(time.time())
+        epochNow = epochNow - 432000
+        c.execute('SELECT ID FROM Movies WHERE Epoch > {};'.format(epochNow))
+
     # Figures out upcoming movies in DB
     def newMovies(self):
         epochNow = int(time.time())
@@ -256,21 +247,41 @@ class GUIhtml:
 
     # Extracts ID numbers from string resulting from newMovies()
     def newMovieVar(self, x):
-        mVar1 = str(self.newMovies())
-        movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
-        movieVar1 = movVar1.split(' ', 1)[0]
-        mVar1 = str(self.newMovies())
-        movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
-        movieVar2 = movVar1.split(' ', 2)[1]
-        mVar1 = str(self.newMovies())
-        movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
-        movieVar3 = movVar1.split(' ', 3)[2]
-        mVar1 = str(self.newMovies())
-        movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
-        movieVar4 = movVar1.split(' ', 4)[3]
-        mVar1 = str(self.newMovies())
-        movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
-        movieVar5 = movVar1.split(' ', 5)[4]
+        movieVar1 = ''
+        movieVar2 = ''
+        movieVar3 = ''
+        movieVar4 = ''
+        movieVar5 = ''
+        try:
+            mVar1 = str(self.newMovies())
+            movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
+            movieVar1 = movVar1.split(' ', 1)[0]
+        except:
+            pass
+        try:
+            mVar1 = str(self.newMovies())
+            movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
+            movieVar2 = movVar1.split(' ', 2)[1]
+        except:
+            pass
+        try:
+            mVar1 = str(self.newMovies())
+            movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
+            movieVar3 = movVar1.split(' ', 3)[2]
+        except:
+            pass
+        try:
+            mVar1 = str(self.newMovies())
+            movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
+            movieVar4 = movVar1.split(' ', 4)[3]
+        except:
+            pass
+        try:
+            mVar1 = str(self.newMovies())
+            movVar1 = ''.join(c for c in mVar1 if c not in '()[],')
+            movieVar5 = movVar1.split(' ', 5)[4]
+        except:
+            pass
         if x == 1:
             return movieVar1
         elif x == 2:
@@ -282,9 +293,17 @@ class GUIhtml:
         else:
             return movieVar5
 
+    # Re-order table to make sure the newest movies are always at the end
+    def sortTable(self):
+        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT);')
+        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating FROM Movies ORDER BY Epoch;')
+        c.execute('DROP TABLE Movies;')
+        c.execute('ALTER TABLE Ordered RENAME TO Movies;')
+
 
     # Adds records into DB from text fields
     def addRecord(self):
+        self.sortTable()
         try:
             newTitle = self.text_title.get("1.0", 'end-1c')
             newSynopsis = self.text_summary.get("1.0", 'end-1c')
@@ -305,31 +324,26 @@ class GUIhtml:
                       .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch))
             conn.commit()
         except sqlite3.IntegrityError:
-                print ("whooooops")
-##    def addChunk1(self):
-##        newChunk = self.chunk.format((self.text_title.get(1.0,'end')),
-##           (self.text_date2d.get(1.0,'end')),
-##           (self.text_date3d.get(1.0,'end')),
-##           (self.text_cast.get(1.0,'end')),
-##           (self.text_summary.get(1.0,'end')),
-##           (self.text_runtime.get(1.0,'end')),
-##           (self.text_trailer.get(1.0,'end')),
-##           (self.text_image.get(1.0,'end')),
-##           (self.text_rating.get(1.0,'end')))
-##        print (newChunk)
-##        return str(newChunk)
+                print ("There is already a movie scheduled for those days!")
 
 
-    # Grabs record of whatever movie combobox is set to, and plugs it into HTML chunk
-    # Try to make it grab the last few movies in DB, regardless of combobox
+    # Grabs record of recent movies and plugs it into HTML chunk, does some trickery to combine 2D and 3D movies
+    # 2D and 3D have to be next to each other in DB to work
     def addChunk1(self, x):
-        title = str(self.latestTitle(x))[3:-4]
         if str(self.latestFormat(x))[3:-4] == '2D':
-            dates = ((str(self.latestDates(x))[3:-4])+' in 2D')
+            dates = ((str(self.latestDates(x))[3:-10]))
             dates3d = ''
         else:
-            dates = ((str(self.latestDates(x))[3:-4])+' in 2D')
-            dates3d = ((str(self.latestDates(x))[3:-4])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
+            dates = ''
+            dates3d = ((str(self.latestDates(x))[3:-10])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
+        if self.latestTitle(x) == self.latestTitle(x+1):
+            title = str(self.latestTitle(x))[3:-4]
+            dates = ((str(self.latestDates(x))[3:-10])+' in 2D')
+            dates3d = ((str(self.latestDates(x+1))[3:-10])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
+        elif self.latestTitle(x) == self.latestTitle(x-1):
+            title = ''
+        else:
+            title = str(self.latestTitle(x))[3:-4]
         synopsis = str(self.latestSynopsis(x))[3:-4]
         cast = str(self.latestCast(x))[3:-4]
         runtime = str(self.latestRuntime(x))[3:-4]
@@ -339,7 +353,10 @@ class GUIhtml:
             rating = str(self.latestRating(x))[3:-4] 
         trailer = str(self.latestTrailer(x))[3:-4] 
         image = str(self.latestImage(x))[3:-4]
-
+        if dates3d != '':
+            reald = '<img src="http://www.sunsettheatre.com/images/spacer.jpg"><img src="http://www.sunsettheatre.com/images/spacer.jpg"><img src="http://www.sunsettheatre.com/images/realdlogo.jpg">'
+        else:
+            reald = ''
         newChunk = self.chunk.format((title),
             (dates),
             (dates3d),
@@ -348,14 +365,13 @@ class GUIhtml:
             (runtime),
             (trailer),
             (image),
-            (rating))
+            (rating),
+            (reald))
         if title == '':
             return ''
+            
         else:
             return str(newChunk)
-
-            
-
 
 
     # Gets records from DB based on most recent movies
@@ -408,25 +424,27 @@ class GUIhtml:
     def latestTitle(self, x):
         if x == 1:
             varID = (self.newMovieVar(1))
-            c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+            c.execute(("SELECT Title FROM Movies WHERE ID ='{}';").format(varID))
             return c.fetchall()
         elif x == 2:
             varID = (self.newMovieVar(2))
-            c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+            c.execute(("SELECT Title FROM Movies WHERE ID ='{}';").format(varID))
             return c.fetchall()
         elif x == 3:
             varID = (self.newMovieVar(3))
-            c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+            c.execute(("SELECT Title FROM Movies WHERE ID ='{}';").format(varID))
             return c.fetchall()
         elif x == 4:
             varID = (self.newMovieVar(4))
-            c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+            c.execute(("SELECT Title FROM Movies WHERE ID ='{}';").format(varID))
             return c.fetchall()
         else:
             varID = (self.newMovieVar(5))
-            c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+            c.execute(("SELECT Title FROM Movies WHERE ID ='{}';").format(varID))
             return c.fetchall()
 
+
+        
 
     def latestCast(self, x):
         if x == 1:
@@ -560,10 +578,27 @@ class GUIhtml:
             c.execute(("SELECT Image FROM Movies WHERE ID ='{}'").format(varID))
             return c.fetchall()
 
-
-##    def newChunks():
-##        print ('balls')
-        
+    def latestEpoch(self, x):
+        if x == 1:
+            varID = (self.newMovieVar(1))
+            c.execute(("SELECT Epoch FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        elif x == 2:
+            varID = (self.newMovieVar(2))
+            c.execute(("SELECT Epoch FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        elif x == 3:
+            varID = (self.newMovieVar(3))
+            c.execute(("SELECT Epoch FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        elif x == 4:
+            varID = (self.newMovieVar(4))
+            c.execute(("SELECT Epoch FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()
+        else:
+            varID = (self.newMovieVar(5))
+            c.execute(("SELECT Epoch FROM Movies WHERE ID ='{}'").format(varID))
+            return c.fetchall()  
 
 
         # Creates and writes html file
@@ -579,39 +614,6 @@ class GUIhtml:
         third = self.addChunk1(3)
         fourth = self.addChunk1(4)
         fifth = self.addChunk1(5)
-
-##        if fifth == None:
-##            fifth = ''
-        
-##        if self.addChunk1(1) != '':
-##            first = self.addChunk1(1)
-##        elif self.addChunk1(1) == '':
-##            first = ''
-##        if self.addChunk1(2) != '':
-##            second = self.addChunk1(2)
-##        elif self.addChunk1(2) == '':
-##            second = ''
-##        if self.addChunk1(3) != '':
-##            third = self.addChunk1(3)
-##        elif self.addChunk1(3) == '':
-##            third = ''
-####        if self.addChunk1(4) != '':
-####            fourth = self.addChunk1(4)
-####        elif self.addChunk1(4) == '':
-####            fourth = ''
-##        if str(self.addChunk1(4)) == '':
-##            fourth = ''
-##        else:
-##            fourth = self.addChunk1(4)
-##        if str(self.addChunk1(5)) == '':
-##            fifth = ''
-##        else:
-##            fifth = self.addChunk1(5)
-##        if self.addChunk1(5) != '':
-##            fifth = self.addChunk1(5)
-##        elif self.addChunk1(5) == '':
-##            fifth = ''
-
         
         self.createHTML(('''
 <base href="http://www.SunsetTheatre.com/">
@@ -1102,8 +1104,6 @@ All information is subject to change without notice.<br>
 </html>
 '''.format(first, second, third, fourth, fifth)))
 
-##.format((self.addChunk1(1)), (self.addChunk1(2)), (self.addChunk1(3)), (self.addChunk1(4)), (self.addChunk1(5)))))
-
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
@@ -1134,7 +1134,7 @@ All information is subject to change without notice.<br>
 <br>{0}<br>
 
 <img src="http://www.SunsetTheatre.com/images/dlp.png">
-<img src="http://www.SunsetTheatre.com/images/spacer.jpg"><img src="http://www.SunsetTheatre.com/images/dolby7.1.jpg">
+<img src="http://www.SunsetTheatre.com/images/spacer.jpg"><img src="http://www.SunsetTheatre.com/images/dolby7.1.jpg">{9}
 
 <FONT color=yellow size=3>
 </b><br><b>
