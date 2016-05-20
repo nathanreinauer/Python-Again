@@ -5,14 +5,10 @@ from tkinter import ttk
 from tkinter import messagebox
 import time
 from datetime import date
-##import os.path
-##import shutil
-##from bs4 import BeautifulSoup
-##import requests
 
 conn = sqlite3.connect('movielist.db')
 c = conn.cursor()
-##varID = '20'
+
 
 class GUIhtml:
 
@@ -51,12 +47,6 @@ class GUIhtml:
         ttk.Label(self.frame_content,text='Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
         self.text_date2d=Text(self.frame_content,width=25,height=1)
         self.text_date2d.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
-##        self.text_date2d.insert(END, ' in 2D')
-
-##        ttk.Label(self.frame_content,text='3D Dates',foreground='#ccffff').grid(row=4,column=2,pady=5, sticky='e')
-##        self.text_date3d=Text(self.frame_content,width=25,height=1)
-##        self.text_date3d.grid(row=4,column=3,columnspan=1,padx=5, sticky='w')
-####        self.text_date3d.insert(END, ' in 3D')
 
         ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
         self.text_cast=Text(self.frame_content,width=75,height=4, wrap=WORD)
@@ -78,15 +68,18 @@ class GUIhtml:
         self.text_image=Text(self.frame_content,width=30,height=1)
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
-        self.text_rating=Text(self.frame_content,width=7,height=1)
-        self.text_rating.grid(row=8,column=3,columnspan=2,padx=5, sticky='w')
-
         self.contentBox = StringVar()		 
         self.combobox = ttk.Combobox(self.frame_content, textvariable = self.contentBox, state='readonly', width=30)		  	 
         self.combobox.grid(row=12,column=1)
         self.combobox.config(values = self.forComboBox())
         self.contentBox.set('Select movie:')
+
+        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        self.contentBox2 = StringVar()		 
+        self.combobox2 = ttk.Combobox(self.frame_content, textvariable = self.contentBox2, state='readonly', width=15)		  	 
+        self.combobox2.grid(row=8,column=3)
+        self.combobox2.config(values = ('G', 'PG', 'PG-13', 'R'))
+        self.contentBox2.set('Select:')
 
         s = ttk.Style()                    
         s.configure('Wild.TRadiobutton',background='#009999',foreground='#ccffff')
@@ -130,7 +123,7 @@ class GUIhtml:
         return c.fetchall()
 
     def getSynopsis(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]#Currently this line grabs record based on combobox
+        varID = (self.contentBox.get()).split(' ', 1)[0]
         c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
         return c.fetchall()
 
@@ -205,7 +198,7 @@ class GUIhtml:
         self.text_runtime.insert(1.0, runtime)
 
         rating = str(self.getRating())[3:-4] # Insert field into textbox
-        self.text_rating.insert(1.0, rating)
+        self.contentBox2.set(rating)
 
         trailer = str(self.getTrailer())[3:-4] # Insert field into textbox
         self.text_trailer.insert(1.0, trailer)
@@ -329,7 +322,7 @@ class GUIhtml:
             newSynopsis = self.text_summary.get("1.0", 'end-1c')
             newCast = self.text_cast.get("1.0", 'end-1c')
             newRuntime = self.text_runtime.get("1.0", 'end-1c')
-            newRating = self.text_rating.get("1.0", 'end-1c')
+            newRating = self.contentBox2.get()
             newTrailer = self.text_trailer.get("1.0", 'end-1c')
             newDates = self.text_date2d.get("1.0", 'end-1c')+" ("+str(self.spin.get())+")"
             newImage = self.text_image.get("1.0", 'end-1c')
@@ -1165,7 +1158,7 @@ All information is subject to change without notice.<br>
         self.text_trailer.delete(1.0,'end')
         self.text_runtime.delete(1.0,'end')
         self.text_image.delete(1.0,'end')
-        self.text_rating.delete(1.0,'end')
+        self.contentBox2.set('Select:')
         self.v.set(1)
         self.var.set(str(date.today().year))
 
