@@ -19,52 +19,52 @@ class GUIhtml:
         # Frame
         master.title('Sunset Movie Editor')
         master.resizable(False,False)
-        master.configure(background='#009999')
+        master.configure(background='#fe001a')
 
         # Colors, fonts, etc.
         self.style = ttk.Style()
-        self.style.configure('TFrame',background='#009999')
-        self.style.configure('TButton',background='#009999')
-        self.style.configure('TLabel',background='#009999', font=('Arial',11))
-        self.style.configure('Header.TLabel',background='#009999',font=('Arial',18,'bold'))
+        self.style.configure('TFrame',background='#fe001a')
+        self.style.configure('TButton',background='#fe001a')
+        self.style.configure('TLabel',background='#fe001a', font=('Arial',11))
+        self.style.configure('Header.TLabel',background='#fe001a',font=('Georgia',25,'bold'))
 
         # Header
         self.frame_header = ttk.Frame(master)
         self.frame_header.pack()
 
         # Header content
-        ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ccffff').grid(row=0,column=1,pady=5)
+        ttk.Label(self.frame_header,text='Movie Editor',style='Header.TLabel',foreground='#ffffff').grid(row=0,column=1,pady=5)
 
         # Body 
         self.frame_content=ttk.Frame(master)
         self.frame_content.pack()
 
         # Labels / Text boxes / Placement
-        ttk.Label(self.frame_content,text='Title',foreground='#ccffff').grid(row=3,column=0,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Title',foreground='#ffffff').grid(row=3,column=0,pady=5, sticky='e')
         self.text_title=Text(self.frame_content,width=65,height=1)
         self.text_title.grid(row=3,column=1,columnspan=3,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='Dates',foreground='#ccffff').grid(row=4,column=0,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Dates',foreground='#ffffff').grid(row=4,column=0,pady=5, sticky='e')
         self.text_date2d=Text(self.frame_content,width=25,height=1)
         self.text_date2d.grid(row=4,column=1,columnspan=1,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='Cast',foreground='#ccffff').grid(row=5,column=0,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Cast',foreground='#ffffff').grid(row=5,column=0,pady=5, sticky='e')
         self.text_cast=Text(self.frame_content,width=75,height=4, wrap=WORD)
         self.text_cast.grid(row=5,column=1,columnspan=3,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='Synopsis',foreground='#ccffff').grid(row=6,column=0,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Synopsis',foreground='#ffffff').grid(row=6,column=0,pady=5, sticky='e')
         self.text_summary=Text(self.frame_content,width=75,height=9, wrap=WORD)
         self.text_summary.grid(row=6,column=1,columnspan=3,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='Runtime',foreground='#ccffff').grid(row=7,column=0,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Runtime',foreground='#ffffff').grid(row=7,column=0,pady=5, sticky='e')
         self.text_runtime=Text(self.frame_content,width=20,height=1)
         self.text_runtime.grid(row=7,column=1,columnspan=2,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ccffff').grid(row=7,column=2,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='youtube.com/watch?v=',foreground='#ffffff').grid(row=7,column=2,pady=5, sticky='e')
         self.text_trailer=Text(self.frame_content,width=15,height=1)
         self.text_trailer.grid(row=7,column=3,columnspan=2,padx=5, sticky='w')
 
-        ttk.Label(self.frame_content,text='Image',foreground='#ccffff').grid(row=8,column=0,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Image',foreground='#ffffff').grid(row=8,column=0,pady=5, sticky='e')
         self.text_image=Text(self.frame_content,width=30,height=1)
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
 
@@ -74,7 +74,7 @@ class GUIhtml:
         self.combobox.config(values = self.forComboBox())
         self.contentBox.set('Select movie:')
 
-        ttk.Label(self.frame_content,text='Rating',foreground='#ccffff').grid(row=8,column=2,pady=5, sticky='e')
+        ttk.Label(self.frame_content,text='Rating',foreground='#ffffff').grid(row=8,column=2,pady=5, sticky='e')
         self.contentBox2 = StringVar()		 
         self.combobox2 = ttk.Combobox(self.frame_content, textvariable = self.contentBox2, state='readonly', width=15)		  	 
         self.combobox2.grid(row=8,column=3)
@@ -82,7 +82,7 @@ class GUIhtml:
         self.contentBox2.set('Select:')
 
         s = ttk.Style()                    
-        s.configure('Wild.TRadiobutton',background='#009999',foreground='#ccffff')
+        s.configure('Wild.TRadiobutton',background='#fe001a',foreground='#ffffff')
 
         self.v = IntVar()
         self.radio2d=ttk.Radiobutton(self.frame_content, text="2D", style='Wild.TRadiobutton', variable=self.v, value=1, command=self.selected).grid(row=4,column=3,sticky='w')
