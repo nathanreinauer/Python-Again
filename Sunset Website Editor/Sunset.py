@@ -287,17 +287,20 @@ class GUIhtml:
     # Put populate Past Movies section
     def getPastMovies(self):
         epochNow = int(time.time())
-        c.execute("SELECT Dates, Title FROM Movies WHERE Epoch < {};".format(epochNow))
+        c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch < {};".format(epochNow))
         return c.fetchall()
 
     # Eventually get current year instead of hardcoding "(2016)"
     def listPastMovies(self):
-        pastList = str(self.getPastMovies())
+        x = str(self.getPastMovies())
+        pastList = str(self.getPastMovies()).replace("\\n", "")
+        pastList1 = pastList.replace("', '2D'", "")
         pastList2 = pastList.replace(" (2016)', '", ": <b>").replace("'), ('", "</b><br>")
         pastList3 = pastList2.replace(" (2016)', \"",": <b>").replace("\"), ('", "</b><br>")
-        pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>")
+        pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
 
-        print (pastList4)
+##        print (x)
+##        print (pastList4)
         return (pastList4)
 
 ##    def listPastMovies(self):
