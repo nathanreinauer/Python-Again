@@ -164,15 +164,6 @@ class GUIhtml:
 
     # Combo Box
 
-##    def getRecord(self):
-##        balls = self.contentBox.get()[0:2]
-##        print (balls)
-##        c.execute(("SELECT * FROM Movies WHERE ID ='{}'").format(balls))
-##        return c.fetchall()
-
-##    def buttImport(self):
-##        varID = self.getRecord()
-
     def forComboBox(self):
         c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,9")
         return c.fetchall()
@@ -293,6 +284,26 @@ class GUIhtml:
         else:
             return movieVar5
 
+    # Put populate Past Movies section
+    def getPastMovies(self):
+        epochNow = int(time.time())
+        c.execute("SELECT Dates, Title FROM Movies WHERE Epoch < {};".format(epochNow))
+        return c.fetchall()
+
+    # Eventually get current year instead of hardcoding "(2016)"
+    def listPastMovies(self):
+        pastList = str(self.getPastMovies())
+        pastList2 = pastList.replace(" (2016)', '", ": <b>").replace("'), ('", "</b><br>")
+        pastList3 = pastList2.replace(" (2016)', \"",": <b>").replace("\"), ('", "</b><br>")
+        pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>")
+
+        print (pastList4)
+        return (pastList4)
+
+##    def listPastMovies(self):
+##        pastList 
+
+        
     # Re-order table to make sure the newest movies are always at the end
     def sortTable(self):
         c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT);')
@@ -877,7 +888,7 @@ To see what the critics think
 <FONT color="red" size="5"><b>Past Movies:</b><br>
 <FONT color=yellow size="3">
 
-
+{5}
 
 <br><br>
 
@@ -1102,7 +1113,7 @@ All information is subject to change without notice.<br>
 </font>
 </body>
 </html>
-'''.format(first, second, third, fourth, fifth)))
+'''.format(first, second, third, fourth, fifth, self.listPastMovies())))
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
