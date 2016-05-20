@@ -236,8 +236,8 @@ class GUIhtml:
     # Figures out upcoming movies in DB
     def newMovies(self):
         epochNow = int(time.time())
-        epochNow = epochNow - 432000
-        c.execute('SELECT ID FROM Movies WHERE Epoch > {};'.format(epochNow))
+##        epochNow = epochNow - 432000
+        c.execute('SELECT ID FROM Movies WHERE LastEpoch > {};'.format(epochNow))
         return c.fetchall()
 
     # Extracts ID numbers from string resulting from newMovies()
@@ -291,7 +291,7 @@ class GUIhtml:
     # Put populate Past Movies section
     def getPastMovies(self):
         epochNow = int(time.time())
-        c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch < {};".format(epochNow))
+        c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {};".format(epochNow))
         return c.fetchall()
 
     # This cuts up the string that comes from the DB and adds it to HTML
@@ -308,8 +308,8 @@ class GUIhtml:
         
     # Re-order table to make sure the newest movies are always at the end
     def sortTable(self):
-        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT);')
-        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound FROM Movies ORDER BY Epoch;')
+        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT, LastEpoch INTEGER);')
+        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch FROM Movies ORDER BY Epoch;')
         c.execute('DROP TABLE Movies;')
         c.execute('ALTER TABLE Ordered RENAME TO Movies;')
 
@@ -335,10 +335,14 @@ class GUIhtml:
                 newSound = "Dolby 7.1"
             else:
                 newSound = "Dolby 5.1"
+            if newDates.count(',') > 1:
+                newLastEpoch = newEpoch + 432000
+            else:
+                newLastEpoch = newEpoch + 259200
             
             
-            c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}");'
-                      .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound))
+            c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound, LastEpoch) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}", {});'
+                      .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound, newLastEpoch))
             conn.commit()
         except sqlite3.IntegrityError:
                 print ("There is already a movie scheduled for those days!")
