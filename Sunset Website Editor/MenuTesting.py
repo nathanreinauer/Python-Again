@@ -35,33 +35,73 @@ class windowClass(Frame):
         menuBar = MenuBar()
         self.SetMenuBar(menuBar)
         
-        # File menu
+#-------# File menu
         fileButton = Menu()
         menuBar.Append(fileButton, 'File')
 
-        # File - "Check/Transfer"
-        checkItem = MenuItem(fileButton, ID_ANY,"Check/Transfer Files...")
-        fileButton.Append(checkItem)
-        self.Bind(EVT_MENU, self.Message, checkItem)
+        # File - "Create HTML File"
+        createItem = MenuItem(fileButton, ID_ANY,"Create HTML File")
+        fileButton.Append(createItem)
+        self.Bind(EVT_MENU, self.Message, createItem)
 
-        # File - "Date/Time of Last Check"
-        timeItem = MenuItem(fileButton, ID_ANY,"Time of Last Check")
-        fileButton.Append(timeItem)
-        self.Bind(EVT_MENU, self.TimeMessage, timeItem)
 
+        # File - "Open Newest HTML File"
+        openItem = MenuItem(fileButton, ID_ANY,"Open Newest HTML File")
+        fileButton.Append(openItem)
+        self.Bind(EVT_MENU, self.TimeMessage, openItem)
+
+        # File - "Import Last Record"
+        importItem = MenuItem(fileButton, ID_ANY,"Import Last Record")
+        fileButton.Append(importItem)
+        self.Bind(EVT_MENU, self.Message, importItem)
+
+        # File - "Clear All Fields"
+        clearItem = MenuItem(fileButton, ID_ANY,"Clear All Fields")
+        fileButton.Append(clearItem)
+        self.Bind(EVT_MENU, self.TimeMessage, clearItem)
+        
         # File - "Quit"
         exitItem = MenuItem(fileButton, ID_EXIT,"Quit")
         fileButton.Append(exitItem)
         self.Bind(EVT_MENU, self.Quit, exitItem)
         
+#-------# View menu
+        viewButton = Menu()
+        menuBar.Append(viewButton, 'View')
 
+        # View - "Watch Trailer"
+        trailerItem = MenuItem(viewButton, ID_ANY,"Watch Trailer")
+        viewButton.Append(trailerItem)
+        self.Bind(EVT_MENU, self.Message, trailerItem)
 
+        # View - "Visit SunsetTheatre.com"
+        sunsetItem = MenuItem(viewButton, ID_ANY,"Visit SunsetTheatre.com")
+        viewButton.Append(sunsetItem)
+        self.Bind(EVT_MENU, self.TimeMessage, sunsetItem)
 
+        # View - "Print Database To Text File"
+        databaseItem = MenuItem(viewButton, ID_ANY,"View Database")
+        viewButton.Append(databaseItem)
+        self.Bind(EVT_MENU, self.Message, databaseItem)
 
+#-------# Help menu
+        helpButton = Menu()
+        menuBar.Append(helpButton, 'Help')
 
+        # View - "View Manual"
+        manualItem = MenuItem(helpButton, ID_ANY,"View Manual")
+        helpButton.Append(manualItem)
+        self.Bind(EVT_MENU, self.Message, manualItem)
 
+        # View - "Tech Support"
+        supportItem = MenuItem(helpButton, ID_ANY,"Tech Support")
+        helpButton.Append(supportItem)
+        self.Bind(EVT_MENU, self.TimeMessage, supportItem)
 
-
+        # View - "About"
+        aboutItem = MenuItem(helpButton, ID_ANY,"About")
+        helpButton.Append(aboutItem)
+        self.Bind(EVT_MENU, self.Message, aboutItem)
 
 #---------------------------------------
 
