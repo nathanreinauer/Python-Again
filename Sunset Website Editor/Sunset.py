@@ -1,10 +1,11 @@
-
+import webbrowser
 import sqlite3
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import time
 from datetime import date
+import os
 
 conn = sqlite3.connect('movielist.db')
 c = conn.cursor()
@@ -145,18 +146,14 @@ class GUIhtml:
 #---------------MENU FUNCTIONS
 
     def openNewest(self):
-        print ("openNewest")
-
-    def importLast(self):
-        print("importLast")
-
-
+        filename = 'index.html'
+        os.system("start "+filename)
 
     def watchTrailer(self):
-        print ("watchTrailer")
+        webbrowser.open('https://www.youtube.com/watch?v={}'.format(self.text_trailer.get("1.0", 'end-1c')))
 
     def visitSite(self):
-        print("visitSite")
+        webbrowser.open('http://sunsettheatre.com')
 
     def viewDB(self):
         print("viewDB")
@@ -169,8 +166,103 @@ class GUIhtml:
 
     def about(self):
         print("about")
+
+    def getSound2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getSynopsis2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getTitle2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getCast2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Actors FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getRating2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Rating FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getDates2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Dates FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getRuntime2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Runtime FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getTrailer2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Trailer FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getImage2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Image FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def getFormat2(self):
+        varID = (self.contentBox.get()).split(' ', 1)[0]
+        c.execute(("SELECT Format FROM Movies WHERE ID ='{}'").format(varID))
+        return c.fetchall()
+
+    def importLast(self):
+
+        self.clear()
+ 
+        title = str(self.getTitle2())[3:-4] # Insert field into textbox
+        self.text_title.insert(1.0, title)
+
+        dates = str(self.getDates2())[3:-11] # Insert field into textbox
+        self.text_date2d.insert(1.0, dates)
+
+        synopsis = str(self.getSynopsis2())[3:-4] # Insert field into textbox
+        self.text_summary.insert(1.0, synopsis)
+
+        cast = str(self.getCast2())[3:-4] # Insert field into textbox
+        self.text_cast.insert(1.0, cast)
+
+        runtime = str(self.getRuntime2())[3:-4] # Insert field into textbox
+        self.text_runtime.insert(1.0, runtime)
+
+        rating = str(self.getRating2())[3:-4] # Insert field into textbox
+        self.contentBox2.set(rating)
+
+        trailer = str(self.getTrailer2())[3:-4] # Insert field into textbox
+        self.text_trailer.insert(1.0, trailer)
+
+        image = str(self.getImage2())[3:-4] # Insert field into textbox
+        self.text_image.insert(1.0, image)
+
+        year = str(self.getDates2())[-9:-5]
+        self.var.set(year)
         
 
+        format1 = str(self.getFormat2())[3:-4]
+        if format1 == '3D':
+            self.v.set(2)
+        else:
+            self.v.set(1)
+
+        sound = str(self.getSound2())[3:-4]
+        if sound == 'Dolby 7.1':
+            self.v2.set(2)
+        else:
+            self.v2.set(1)
+
+        
+#---------------------------
 
 
 
