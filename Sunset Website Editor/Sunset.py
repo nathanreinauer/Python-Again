@@ -167,95 +167,92 @@ class GUIhtml:
     def about(self):
         print("about")
 
-    def getSound2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
 
-    def getSynopsis2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
 
-    def getTitle2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
 
-    def getCast2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Actors FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
+##    def getSound2(self):
+##        c.execute("SELECT Sound FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getSynopsis2(self):
+##        c.execute("SELECT Synopsis FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getTitle2(self):
+##        c.execute("SELECT Title FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getCast2(self):
+##        c.execute("SELECT Actors FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getRating2(self):
+##        c.execute("SELECT Rating FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getDates2(self):
+##        c.execute("SELECT Dates FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getRuntime2(self):
+##        c.execute("SELECT Runtime FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getTrailer2(self):
+##        c.execute("SELECT Trailer FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getImage2(self):
+##        c.execute("SELECT Image FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
+##
+##    def getFormat2(self):
+##        c.execute("SELECT Format FROM Movies ORDER BY ID DESC LIMIT 1;")
+##        return c.fetchall()
 
-    def getRating2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Rating FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
-
-    def getDates2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Dates FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
-
-    def getRuntime2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Runtime FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
-
-    def getTrailer2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Trailer FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
-
-    def getImage2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Image FROM Movies WHERE ID ='{}'").format(varID))
-        return c.fetchall()
-
-    def getFormat2(self):
-        varID = (self.contentBox.get()).split(' ', 1)[0]
-        c.execute(("SELECT Format FROM Movies WHERE ID ='{}'").format(varID))
+    def getLast(self, x):
+        c.execute("SELECT {} FROM Movies ORDER BY ID DESC LIMIT 1;".format(x))
         return c.fetchall()
 
     def importLast(self):
 
         self.clear()
  
-        title = str(self.getTitle2())[3:-4] # Insert field into textbox
+        title = str(self.getLast("Title"))[3:-4]
         self.text_title.insert(1.0, title)
 
-        dates = str(self.getDates2())[3:-11] # Insert field into textbox
+        dates = str(self.getLast("Dates"))[3:-11]
         self.text_date2d.insert(1.0, dates)
 
-        synopsis = str(self.getSynopsis2())[3:-4] # Insert field into textbox
+        synopsis = str(self.getLast("Synopsis"))[3:-4] 
         self.text_summary.insert(1.0, synopsis)
 
-        cast = str(self.getCast2())[3:-4] # Insert field into textbox
+        cast = str(self.getLast("Actors"))[3:-4] 
         self.text_cast.insert(1.0, cast)
 
-        runtime = str(self.getRuntime2())[3:-4] # Insert field into textbox
+        runtime = str(self.getLast("Runtime"))[3:-4] 
         self.text_runtime.insert(1.0, runtime)
 
-        rating = str(self.getRating2())[3:-4] # Insert field into textbox
+        rating = str(self.getLast("Rating"))[3:-4] 
         self.contentBox2.set(rating)
 
-        trailer = str(self.getTrailer2())[3:-4] # Insert field into textbox
+        trailer = str(self.getLast("Trailer"))[3:-4]
         self.text_trailer.insert(1.0, trailer)
 
-        image = str(self.getImage2())[3:-4] # Insert field into textbox
+        image = str(self.getLast("Image"))[3:-4] 
         self.text_image.insert(1.0, image)
 
-        year = str(self.getDates2())[-9:-5]
+        year = str(self.getLast("Dates"))[-9:-5]
         self.var.set(year)
         
 
-        format1 = str(self.getFormat2())[3:-4]
+        format1 = str(self.getLast("Format"))[3:-4]
         if format1 == '3D':
             self.v.set(2)
         else:
             self.v.set(1)
 
-        sound = str(self.getSound2())[3:-4]
+        sound = str(self.getLast("Sound"))[3:-4]
         if sound == 'Dolby 7.1':
             self.v2.set(2)
         else:
