@@ -106,6 +106,20 @@ class GUIhtml:
         ttk.Button(self.frame_content, text='Import Record',command=self.buttClick).grid(row=12,column=2,padx=5,pady=5,sticky='w')
         ttk.Button(self.frame_content, text='Add Record',command=self.addRecord).grid(row=12,column=3,padx=5,pady=5,sticky='w')
 
+#-------------------------MENU ITEMS-------------------------#
+
+
+
+
+
+
+
+
+
+
+
+
+        
 #-------------------------FUNCTIONS-------------------------#
 
     # Radio Button functions
