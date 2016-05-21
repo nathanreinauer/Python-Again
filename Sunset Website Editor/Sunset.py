@@ -6,6 +6,7 @@ from tkinter import messagebox
 import time
 from datetime import date
 import os
+import csv
 
 conn = sqlite3.connect('movielist.db')
 c = conn.cursor()
@@ -124,10 +125,15 @@ class GUIhtml:
 
         # View Menu
         viewmenu = Menu(menubar, tearoff=0)
+        dbmenu = Menu(viewmenu, tearoff=0)
         viewmenu.add_command(label="Watch Trailer", command=self.watchTrailer)
         viewmenu.add_command(label="Visit SunsetTheatre.com", command=self.visitSite)
-        viewmenu.add_command(label="View Database", command=self.viewDB)
+        dbmenu.add_command(label="Text File", command=lambda: self.viewDB('txt'))
+        dbmenu.add_command(label="CSV File", command=lambda: self.viewDB('csv'))
+        viewmenu.add_cascade(label="View Database As...",menu=dbmenu)
         menubar.add_cascade(label="View", menu=viewmenu)
+
+
 
         helpmenu = Menu(menubar, tearoff=0)
         helpmenu.add_command(label="View Manual", command=self.manual)
@@ -155,9 +161,16 @@ class GUIhtml:
     def visitSite(self):
         webbrowser.open('http://sunsettheatre.com')
 
-    def viewDB(self):
-        print("viewDB")
+    def viewDB(self, x):
+        data = c.execute("SELECT * FROM Movies")
 
+        with open('output.{}'.format(x), 'w') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Record ID', 'Epoch', 'Dates', 'Format', 'Title', 'Runtime', 'Image', 'Trailer', 'Cast', 'Synopsis', 'Rating', 'Sound', 'Last Epoch'])
+            writer.writerows(data)
+        filename = 'output.{}'.format(x)
+        os.system("start "+filename)
+        
     def manual(self):
         print("manual")
 
