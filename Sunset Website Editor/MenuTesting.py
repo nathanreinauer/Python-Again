@@ -42,23 +42,23 @@ class windowClass(Frame):
         # File - "Create HTML File"
         createItem = MenuItem(fileButton, ID_ANY,"Create HTML File")
         fileButton.Append(createItem)
-        self.Bind(EVT_MENU, self.Message, createItem)
+        self.Bind(EVT_MENU, self.submit, createItem)
 
 
         # File - "Open Newest HTML File"
         openItem = MenuItem(fileButton, ID_ANY,"Open Newest HTML File")
         fileButton.Append(openItem)
-        self.Bind(EVT_MENU, self.TimeMessage, openItem)
+        self.Bind(EVT_MENU, self.openHTML, openItem)
 
         # File - "Import Last Record"
         importItem = MenuItem(fileButton, ID_ANY,"Import Last Record")
         fileButton.Append(importItem)
-        self.Bind(EVT_MENU, self.Message, importItem)
+        self.Bind(EVT_MENU, self.importLast, importItem)
 
         # File - "Clear All Fields"
         clearItem = MenuItem(fileButton, ID_ANY,"Clear All Fields")
         fileButton.Append(clearItem)
-        self.Bind(EVT_MENU, self.TimeMessage, clearItem)
+        self.Bind(EVT_MENU, self.clear, clearItem)
         
         # File - "Quit"
         exitItem = MenuItem(fileButton, ID_EXIT,"Quit")
@@ -77,12 +77,12 @@ class windowClass(Frame):
         # View - "Visit SunsetTheatre.com"
         sunsetItem = MenuItem(viewButton, ID_ANY,"Visit SunsetTheatre.com")
         viewButton.Append(sunsetItem)
-        self.Bind(EVT_MENU, self.TimeMessage, sunsetItem)
+        self.Bind(EVT_MENU, self.visitSite, sunsetItem)
 
         # View - "Print Database To Text File"
         databaseItem = MenuItem(viewButton, ID_ANY,"View Database")
         viewButton.Append(databaseItem)
-        self.Bind(EVT_MENU, self.Message, databaseItem)
+        self.Bind(EVT_MENU, self.printDB, databaseItem)
 
 #-------# Help menu
         helpButton = Menu()
@@ -91,17 +91,17 @@ class windowClass(Frame):
         # View - "View Manual"
         manualItem = MenuItem(helpButton, ID_ANY,"View Manual")
         helpButton.Append(manualItem)
-        self.Bind(EVT_MENU, self.Message, manualItem)
+        self.Bind(EVT_MENU, self.openManual, manualItem)
 
         # View - "Tech Support"
         supportItem = MenuItem(helpButton, ID_ANY,"Tech Support")
         helpButton.Append(supportItem)
-        self.Bind(EVT_MENU, self.TimeMessage, supportItem)
+        self.Bind(EVT_MENU, self.techSupport, supportItem)
 
         # View - "About"
         aboutItem = MenuItem(helpButton, ID_ANY,"About")
         helpButton.Append(aboutItem)
-        self.Bind(EVT_MENU, self.Message, aboutItem)
+        self.Bind(EVT_MENU, self.about, aboutItem)
 
 #---------------------------------------
 

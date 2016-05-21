@@ -108,19 +108,71 @@ class GUIhtml:
 
 #-------------------------MENU ITEMS-------------------------#
 
+        menubar = Menu(master)
 
+        # File Menu
+        filemenu = Menu(menubar, tearoff=0)
+        filemenu.add_command(label="Create HTML File", command=self.submit)
+        filemenu.add_command(label="Open Newest HTML File", command=self.openNewest)
+        filemenu.add_separator()
+        filemenu.add_command(label="Import Last Record", command=self.importLast)
+        filemenu.add_command(label="Clear All Fields", command=self.clear)
+        filemenu.add_separator()
+        filemenu.add_command(label="Quit", command=Quit)
+        menubar.add_cascade(label="File", menu=filemenu)
 
+        # View Menu
+        viewmenu = Menu(menubar, tearoff=0)
+        viewmenu.add_command(label="Watch Trailer", command=self.watchTrailer)
+        viewmenu.add_command(label="Visit SunsetTheatre.com", command=self.visitSite)
+        viewmenu.add_command(label="View Database", command=self.viewDB)
+        menubar.add_cascade(label="View", menu=viewmenu)
 
+        helpmenu = Menu(menubar, tearoff=0)
+        helpmenu.add_command(label="View Manual", command=self.manual)
+        helpmenu.add_command(label="Contact Tech Support", command=self.techSupport)
+        filemenu.add_separator()
+        helpmenu.add_command(label="About", command=self.about)
+        menubar.add_cascade(label="Help", menu=helpmenu)
 
-
-
-
-
-
-
+        # Help Menu
+        master.config(menu=menubar)
 
         
 #-------------------------FUNCTIONS-------------------------#
+
+
+#---------------MENU FUNCTIONS
+
+    def openNewest(self):
+        print ("openNewest")
+
+    def importLast(self):
+        print("importLast")
+
+
+
+    def watchTrailer(self):
+        print ("watchTrailer")
+
+    def visitSite(self):
+        print("visitSite")
+
+    def viewDB(self):
+        print("viewDB")
+
+    def manual(self):
+        print("manual")
+
+    def techSupport(self):
+        print("techSupport")
+
+    def about(self):
+        print("about")
+        
+
+
+
 
     # Radio Button functions
     def selected(self):
@@ -1213,12 +1265,16 @@ Running Time: {5}
 <a href="https://www.dealflicks.com/theaters/sunset-theatre-and-video" target="_blank"><img src="http://www.SunsetTheatre.com/images/buyticketssmall.gif" border="no"></a><br>
 <hr>
 ''')
+root = Tk()
         
 # Run program          
 def main():            
     
-    root = Tk()
+##    root = Tk()
     guihtml = GUIhtml(root)
     root.mainloop()
+
+def Quit():
+    root.destroy()
     
 if __name__ == "__main__": main()
