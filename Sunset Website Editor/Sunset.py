@@ -72,7 +72,7 @@ class GUIhtml:
 
         self.contentBox = StringVar()		 
         self.combobox = ttk.Combobox(self.frame_content, textvariable = self.contentBox, state='readonly', width=30)		  	 
-        self.combobox.grid(row=12,column=1)
+        self.combobox.grid(row=12,column=1, sticky='e')
         self.combobox.config(values = self.forComboBox())
         self.contentBox.set('Select movie:')
 
@@ -103,8 +103,6 @@ class GUIhtml:
 
     
         # Buttons
-        ttk.Button(self.frame_content,text='Update Website', command=self.submit).grid(row=13,column=1,padx=5,pady=5, sticky='e')
-        ttk.Button(self.frame_content,text='Clear All',command=self.clear).grid(row=13,column=2,padx=5,pady=5,sticky='w')
         ttk.Button(self.frame_content, text='Import Record',command=self.buttClick).grid(row=12,column=2,padx=5,pady=5,sticky='w')
         ttk.Button(self.frame_content, text='Add Record',command=self.addRecord).grid(row=12,column=3,padx=5,pady=5,sticky='w')
 
@@ -118,6 +116,7 @@ class GUIhtml:
         filemenu.add_command(label="Open Newest HTML File", command=self.openNewest)
         filemenu.add_separator()
         filemenu.add_command(label="Import Last Record", command=self.importLast)
+        filemenu.add_command(label="Delete Current Record", command=self.messageDeleteRec)
         filemenu.add_command(label="Clear All Fields", command=self.clear)
         filemenu.add_separator()
         filemenu.add_command(label="Quit", command=Quit)
@@ -145,18 +144,88 @@ class GUIhtml:
         # Help Menu
         master.config(menu=menubar)
 
+#-------------------------MESSAGES------------------------#
+
+    def noTrailer(self):
+        result = messagebox.showerror(title='Error!',message=
+                            "Error: Trailer field must contain an 11 character video ID from YouTube!")
+
+    def notFound(self):
+        result = messagebox.showerror(title='Error!',message=
+                            "Error: You must create 'index.html' file first!")
+        
+    def blankImport(self):
+        result = messagebox.showerror(title='Error!',message=
+                            "Error: You must choose a record to import from the dropdown menu!")
+
+    def blankRec(self):
+        result = messagebox.showerror(title='Error!',message=
+                            "Error: Record could not be added because one or more required fields were left blank.")
+
+        
+
+    def messageAdded(self):
+        result = messagebox.showinfo(title='Record Added!',message=
+                            "Success! New record added to the database.")
+
+    def messageDeleted(self):
+        result = messagebox.showinfo(title='Record Deleted!',message=
+                            "Success! Record deleted.")
+
+    def messageDeleteRec(self):
+        try:
+            delRec = self.addEpoch()
+            c.execute("SELECT ID, Title, Format FROM Movies WHERE Epoch = {}".format(delRec))
+            x = c.fetchall()
+            result = messagebox.askyesno(message='Are you sure you want to delete {} from the database?'.format(x),icon='question', title='Delete Record?')
+            if result == True:
+                self.deleteCurrent()
+                self.messageDeleted()
+            else:
+                pass
+        except:
+            result = messagebox.showerror(title='Error!',message=
+                            "Error: No such record exists. Make sure the 'Dates' field is correct.")
+
+    def messageOverwrite(self):
+        result = messagebox.askyesno(message='There is already a movie scheduled for those days! Overwrite?',icon='question', title='Record Already Exists!')
+        if result == True:
+            self.overwriteCurrent()
+        else:
+            pass
+
         
 #-------------------------FUNCTIONS-------------------------#
 
 
 #---------------MENU FUNCTIONS
 
+    def overwriteCurrent(self):
+        overRec = self.addEpoch()
+        c.execute("DELETE FROM Movies WHERE Epoch = {}".format(overRec))
+        conn.commit()
+        self.addRecord()
+
+
+    def deleteCurrent(self):
+        delRec = self.addEpoch()
+        c.execute("DELETE FROM Movies WHERE Epoch = {}".format(delRec))
+        conn.commit()
+        self.clear()
+
     def openNewest(self):
-        filename = 'index.html'
-        os.system("start "+filename)
+        if os.path.isfile('index.html') == True:
+            filename = 'index.html'
+            os.system("start "+filename)
+        else:
+            self.notFound()
+
 
     def watchTrailer(self):
-        webbrowser.open('https://www.youtube.com/watch?v={}'.format(self.text_trailer.get("1.0", 'end-1c')))
+        if len(self.text_trailer.get("1.0", 'end-1c')) == 11:
+            webbrowser.open('https://www.youtube.com/watch?v={}'.format(self.text_trailer.get("1.0", 'end-1c')))
+        else:
+            self.noTrailer()
 
     def visitSite(self):
         webbrowser.open('http://sunsettheatre.com')
@@ -242,56 +311,6 @@ class GUIhtml:
 
         # SELECT each field from a record in DB (based on what's in combobox)
 
-##    def getSound(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getSynopsis(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getTitle(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Title FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getCast(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Actors FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getRating(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Rating FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getDates(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Dates FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getRuntime(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Runtime FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getTrailer(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Trailer FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getImage(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Image FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-##
-##    def getFormat(self):
-##        varID = (self.contentBox.get()).split(' ', 1)[0]
-##        c.execute(("SELECT Format FROM Movies WHERE ID ='{}'").format(varID))
-##        return c.fetchall()
-
     def getFromCombo(self, x):
         varID = (self.contentBox.get()).split(' ', 1)[0]
         c.execute(("SELECT {} FROM Movies WHERE ID ='{}'").format(x, varID))
@@ -308,6 +327,8 @@ class GUIhtml:
 
     # "Import" button -- Gets DB records from "getTitle", etc. and puts them into text fields
     def buttClick(self):
+        if self.contentBox.get() == ('Select movie:'):
+            self.blankImport()
 
         self.clear()
  
@@ -360,7 +381,6 @@ class GUIhtml:
         pattern = '%B %d, %Y' # Tell python what the date format is
         epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
         return (epoch)
-        print (datesEpoch)
 
     # Figures out upcoming movies in DB
     def newMovies(self):
@@ -437,7 +457,11 @@ class GUIhtml:
         
     # Re-order table to make sure the newest movies are always at the end
     def sortTable(self):
-        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT, LastEpoch INTEGER);')
+        try:
+            c.execute('DROP TABLE Ordered;')
+        except:
+            pass
+        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER UNIQUE, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT, LastEpoch INTEGER);')
         c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch FROM Movies ORDER BY Epoch;')
         c.execute('DROP TABLE Movies;')
         c.execute('ALTER TABLE Ordered RENAME TO Movies;')
@@ -447,35 +471,38 @@ class GUIhtml:
     def addRecord(self):
         self.sortTable()
         try:
-            newTitle = self.text_title.get("1.0", 'end-1c')
-            newSynopsis = self.text_summary.get("1.0", 'end-1c')
-            newCast = self.text_cast.get("1.0", 'end-1c')
-            newRuntime = self.text_runtime.get("1.0", 'end-1c')
-            newRating = self.contentBox2.get()
-            newTrailer = self.text_trailer.get("1.0", 'end-1c')
-            newDates = self.text_date2d.get("1.0", 'end-1c')+" ("+str(self.spin.get())+")"
-            newImage = self.text_image.get("1.0", 'end-1c')
-            if self.selected() == 2:
-                newFormat = "3D"
-            else:
-                newFormat = "2D"
-            newEpoch = (self.addEpoch())
-            if self.selected2() == 2:
-                newSound = "Dolby 7.1"
-            else:
-                newSound = "Dolby 5.1"
-            if newDates.count(',') > 1:
-                newLastEpoch = newEpoch + 432000
-            else:
-                newLastEpoch = newEpoch + 259200
-            
-            
-            c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound, LastEpoch) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}", {});'
-                      .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound, newLastEpoch))
-            conn.commit()
-        except sqlite3.IntegrityError:
-                print ("There is already a movie scheduled for those days!")
-
+            try:
+                newTitle = self.text_title.get("1.0", 'end-1c')
+                newSynopsis = self.text_summary.get("1.0", 'end-1c')
+                newCast = self.text_cast.get("1.0", 'end-1c')
+                newRuntime = self.text_runtime.get("1.0", 'end-1c')
+                newRating = self.contentBox2.get()
+                newTrailer = self.text_trailer.get("1.0", 'end-1c')
+                newDates = self.text_date2d.get("1.0", 'end-1c')+" ("+str(self.spin.get())+")"
+                newImage = self.text_image.get("1.0", 'end-1c')
+                if self.selected() == 2:
+                    newFormat = "3D"
+                else:
+                    newFormat = "2D"
+                newEpoch = (self.addEpoch())
+                if self.selected2() == 2:
+                    newSound = "Dolby 7.1"
+                else:
+                    newSound = "Dolby 5.1"
+                if newDates.count(',') > 1:
+                    newLastEpoch = newEpoch + 432000
+                else:
+                    newLastEpoch = newEpoch + 259200
+                
+                
+                c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound, LastEpoch) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}", {});'
+                          .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound, newLastEpoch))
+                conn.commit()
+                self.messageAdded()
+            except sqlite3.IntegrityError:
+                    self.messageOverwrite()
+        except ValueError:
+            self.blankRec()
 
     # Grabs record of recent movies and plugs it into HTML chunk, does some trickery to combine 2D and 3D movies
     # 2D and 3D have to be next to each other in DB to work
@@ -1282,7 +1309,7 @@ All information is subject to change without notice.<br>
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
 
-        # Clears textbox on Clear click
+        # Resets all fields
     def clear(self):
         self.text_title.delete(1.0,'end')
         self.text_cast.delete(1.0,'end')
@@ -1293,6 +1320,7 @@ All information is subject to change without notice.<br>
         self.text_image.delete(1.0,'end')
         self.contentBox2.set('Select:')
         self.v.set(1)
+        self.v2.set(1)
         self.var.set(str(date.today().year))
 
     chunk = ('''
