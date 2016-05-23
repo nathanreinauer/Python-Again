@@ -72,9 +72,8 @@ class GUIhtml:
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
 
         self.contentBox = StringVar()		 
-        self.combobox = ttk.Combobox(self.frame_content, textvariable = self.contentBox, state='readonly', width=30)		  	 
+        self.combobox = ttk.Combobox(self.frame_content, textvariable = self.contentBox, state='readonly', width=30, postcommand = self.forComboBox)		  	 
         self.combobox.grid(row=12,column=1, sticky='e')
-        self.combobox.config(values = self.forComboBox())
         self.contentBox.set('Select movie:')
 
         ttk.Label(self.frame_content,text='Rating',foreground='#ffffff').grid(row=8,column=2,pady=5, sticky='e')
@@ -121,7 +120,7 @@ class GUIhtml:
         filemenu.add_command(label="Clear All Fields", command=self.clear)
         filemenu.add_separator()
         filemenu.add_command(label="Quit", command=Quit)
-        menubar.add_cascade(label="File", menu=filemenu)
+        menubar.add_cascade(label="File", underline=0, menu=filemenu)
 
         # View Menu
         viewmenu = Menu(menubar, tearoff=0)
@@ -201,6 +200,9 @@ class GUIhtml:
 
 #---------------MENU FUNCTIONS
 
+    def techSupport(self):
+        webbrowser.open("mailto:n8thegreatest@gmail.com?subject=Help&body=Heeelp!")
+
     def overwriteCurrent(self):
         overRec = self.addEpoch()
         c.execute("DELETE FROM Movies WHERE Epoch = {}".format(overRec))
@@ -244,18 +246,15 @@ class GUIhtml:
     def manual(self):
         print("manual")
 
-    def techSupport(self):
-        print("techSupport")
-
     def about(self):
-        print("about")
+        result = messagebox.showinfo(title='About Movie Editor',message="Sunset Movie Editor \n Version 1.0\n Coded by Nate in 2016")
+
 
     def getLast(self, x):
         c.execute("SELECT {} FROM Movies ORDER BY ID DESC LIMIT 1;".format(x))
         return c.fetchall()
 
     def importLast(self):
-
         self.clear()
  
         title = str(self.getLast("Title"))[3:-4]
@@ -320,7 +319,8 @@ class GUIhtml:
 
     def forComboBox(self):
         c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,9")
-        return c.fetchall()
+        combo = c.fetchall()
+        self.combobox.config(values = combo)
 
 
 
