@@ -112,34 +112,42 @@ class GUIhtml:
 
         # File Menu
         filemenu = Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Create HTML File", command=self.submit)
-        filemenu.add_command(label="Open Newest HTML File", command=self.openNewest)
+        filemenu.add_command(label="Create HTML File", underline=8, accelerator='CTRL+H', command=self.submit)
+        filemenu.add_command(label="Open Newest HTML File", underline=0, accelerator='CTRL+O', command=self.openNewest)
         filemenu.add_separator()
-        filemenu.add_command(label="Import Last Record", command=self.importLast)
-        filemenu.add_command(label="Delete Current Record", command=self.messageDeleteRec)
-        filemenu.add_command(label="Clear All Fields", command=self.clear)
+        filemenu.add_command(label="Import Last Record", underline=0, accelerator='CTRL+I', command=self.importLast)
+        filemenu.add_command(label="Delete Current Record", underline=0, accelerator='CTRL+D', command=self.messageDeleteRec)
+        filemenu.add_command(label="Clear All Fields", underline=0, accelerator='CTRL+F', command=self.clear)
         filemenu.add_separator()
-        filemenu.add_command(label="Quit", command=Quit)
-        menubar.add_cascade(label="File", underline=0, menu=filemenu)
+        filemenu.add_command(label="Quit", underline=0, accelerator='CTRL+Q',command=Quit)
+        menubar.add_cascade(label="File", underline=0,menu=filemenu)
 
+        menubar.master.bind('<Control-q>', Quit)
+        menubar.master.bind('<Control-h>', self.submit)
+        menubar.master.bind('<Control-o>', self.openNewest)
+        menubar.master.bind('<Control-i>', self.importLast)
+        menubar.master.bind('<Control-d>', self.messageDeleteRec)
+        menubar.master.bind('<Control-f>', self.clear)
+        
+        
         # View Menu
         viewmenu = Menu(menubar, tearoff=0)
         dbmenu = Menu(viewmenu, tearoff=0)
-        viewmenu.add_command(label="Watch Trailer", command=self.watchTrailer)
-        viewmenu.add_command(label="Visit SunsetTheatre.com", command=self.visitSite)
-        dbmenu.add_command(label="Text File", command=lambda: self.viewDB('txt'))
-        dbmenu.add_command(label="CSV File", command=lambda: self.viewDB('csv'))
-        viewmenu.add_cascade(label="View Database As...",menu=dbmenu)
-        menubar.add_cascade(label="View", menu=viewmenu)
+        viewmenu.add_command(label="Watch Trailer", underline=0, command=self.watchTrailer)
+        viewmenu.add_command(label="Visit SunsetTheatre.com", underline=7, command=self.visitSite)
+        dbmenu.add_command(label="Text File", underline=0, command=lambda: self.viewDB('txt'))
+        dbmenu.add_command(label="CSV File", underline=0, command=lambda: self.viewDB('csv'))
+        viewmenu.add_cascade(label="View Database As...",underline=0, menu=dbmenu)
+        menubar.add_cascade(label="View", underline=0, menu=viewmenu)
 
 
 
         helpmenu = Menu(menubar, tearoff=0)
-        helpmenu.add_command(label="View Manual", command=self.manual)
-        helpmenu.add_command(label="Contact Tech Support", command=self.techSupport)
+        helpmenu.add_command(label="View Manual", underline=0, command=self.manual)
+        helpmenu.add_command(label="Contact Tech Support", underline=0, command=self.techSupport)
         filemenu.add_separator()
-        helpmenu.add_command(label="About", command=self.about)
-        menubar.add_cascade(label="Help", menu=helpmenu)
+        helpmenu.add_command(label="About", underline=0, command=self.about)
+        menubar.add_cascade(label="Help", underline=0, menu=helpmenu)
 
         # Help Menu
         master.config(menu=menubar)
@@ -172,7 +180,7 @@ class GUIhtml:
         result = messagebox.showinfo(title='Record Deleted!',message=
                             "Success! Record deleted.")
 
-    def messageDeleteRec(self):
+    def messageDeleteRec(self, event=None):
         try:
             delRec = self.addEpoch()
             c.execute("SELECT ID, Title, Format FROM Movies WHERE Epoch = {}".format(delRec))
@@ -216,7 +224,7 @@ class GUIhtml:
         conn.commit()
         self.clear()
 
-    def openNewest(self):
+    def openNewest(self, event=None):
         if os.path.isfile('index.html') == True:
             filename = 'index.html'
             os.system("start "+filename)
@@ -254,7 +262,7 @@ class GUIhtml:
         c.execute("SELECT {} FROM Movies ORDER BY ID DESC LIMIT 1;".format(x))
         return c.fetchall()
 
-    def importLast(self):
+    def importLast(self, event=None):
         self.clear()
  
         title = str(self.getLast("Title"))[3:-4]
@@ -830,7 +838,7 @@ class GUIhtml:
         file.close()
         
         # Takes content from textbox for use in createHTML() function
-    def submit(self):
+    def submit(self, event=None):
         first = self.addChunk1(1)
         second = self.addChunk1(2)
         third = self.addChunk1(3)
@@ -1331,7 +1339,7 @@ All information is subject to change without notice.<br>
                             "Success! Now just upload this index.html file to the server.")
 
         # Resets all fields
-    def clear(self):
+    def clear(self, event=None):
         self.text_title.delete(1.0,'end')
         self.text_cast.delete(1.0,'end')
         self.text_date2d.delete(1.0,'end')
@@ -1386,7 +1394,7 @@ def main():
     guihtml = GUIhtml(root)
     root.mainloop()
 
-def Quit():
+def Quit(event=None):
     root.destroy()
     
 if __name__ == "__main__": main()
