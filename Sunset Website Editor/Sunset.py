@@ -5,6 +5,7 @@ from tkinter import ttk
 from tkinter import messagebox
 import time
 from datetime import date
+import datetime
 import os
 import csv
 
@@ -385,7 +386,6 @@ class GUIhtml:
     # Figures out upcoming movies in DB
     def newMovies(self):
         epochNow = int(time.time())
-##        epochNow = epochNow - 432000
         c.execute('SELECT ID FROM Movies WHERE LastEpoch > {};'.format(epochNow))
         return c.fetchall()
 
@@ -437,20 +437,41 @@ class GUIhtml:
         else:
             return movieVar5
 
-    # Put populate Past Movies section
+
+    # Grab past movies from DB
     def getPastMovies(self):
-        epochNow = int(time.time())
-        c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {};".format(epochNow))
-        return c.fetchall()
+        epochNow =  int(time.time())
+        epochThisYear = datetime.datetime.now().year # Current year
+        pattern = '%Y' 
+        epoch1 = int(time.mktime(time.strptime(str(epochThisYear), pattern))) # January 1, Current Year
+        c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch1))
+        fetch = (c.fetchall())
+        epoch2 = int(time.mktime(time.strptime(str(epochThisYear - 1), pattern))) # January 1, Previous Year
+        if str(fetch) == '[]':
+            c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch2))
+            print("blank, here's last year's list")
+            blarp = str(c.fetchall())
+            blarp = "<!->" + blarp # Adds invisible code to the beginning of the list so listPastMovies can work in any situation
+            return blarp
+        else:
+            c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch1))
+            print("regular list")
+            return c.fetchall()
+                
+
 
     # This cuts up the string that comes from the DB and adds it to HTML
     # Eventually get current year instead of hardcoding "(2016)"
     def listPastMovies(self):
+        epochThisYear = str(datetime.datetime.now().year)
         x = str(self.getPastMovies())
+        if x[0:4] == '<!->':
+            print ("dot")
+            epochThisYear = str(int(epochThisYear) - 1) 
         pastList = str(self.getPastMovies()).replace("\\n", "")
         pastList1 = pastList.replace("', '2D'", "")
-        pastList2 = pastList.replace(" (2016)', '", ": <b>").replace("'), ('", "</b><br>")
-        pastList3 = pastList2.replace(" (2016)', \"",": <b>").replace("\"), ('", "</b><br>")
+        pastList2 = pastList.replace(" ("+epochThisYear+")', '", ": <b>").replace("'), ('", "</b><br>")
+        pastList3 = pastList2.replace(" ("+epochThisYear+")', \"",": <b>").replace("\"), ('", "</b><br>")
         pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
 
         return (pastList4)
