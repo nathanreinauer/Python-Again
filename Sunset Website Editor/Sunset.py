@@ -457,32 +457,41 @@ class GUIhtml:
         epoch2 = int(time.mktime(time.strptime(str(epochThisYear - 1), pattern))) # January 1, Previous Year
         if str(fetch) == '[]':
             c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch2))
-            print("blank, here's last year's list")
             blarp = str(c.fetchall())
             blarp = "<!->" + blarp # Adds invisible code to the beginning of the list so listPastMovies can work in any situation
             return blarp
         else:
             c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch1))
-            print("regular list")
             return c.fetchall()
-                
-
 
     # This cuts up the string that comes from the DB and adds it to HTML
-    # Eventually get current year instead of hardcoding "(2016)"
     def listPastMovies(self):
         epochThisYear = str(datetime.datetime.now().year)
         x = str(self.getPastMovies())
         if x[0:4] == '<!->':
-            print ("dot")
             epochThisYear = str(int(epochThisYear) - 1) 
         pastList = str(self.getPastMovies()).replace("\\n", "")
         pastList1 = pastList.replace("', '2D'", "")
         pastList2 = pastList.replace(" ("+epochThisYear+")', '", ": <b>").replace("'), ('", "</b><br>")
         pastList3 = pastList2.replace(" ("+epochThisYear+")', \"",": <b>").replace("\"), ('", "</b><br>")
         pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
-
         return (pastList4)
+
+    # Grab ALL past movies from DB for the Past Movies page #---------------------------------------------------------------------------divide this by year?
+    def getPastMoviesAll(self):
+        c.execute("SELECT Dates, Title, Format FROM Movies;")
+        return c.fetchall()
+
+    # This cuts up the string that comes from the DB and adds it to HTML
+    def listPastMoviesAll(self):
+        epochThisYear = "2016"#-----------------------------------------------------------Grab the year from DB
+        pastList = str(self.getPastMoviesAll()).replace("\\n", "")
+        pastList1 = pastList.replace("', '2D'", "")
+        pastList2 = pastList.replace(" ("+epochThisYear+")', '", ": <b>").replace("'), ('", "</b><br>")
+        pastList3 = pastList2.replace(" ("+epochThisYear+")', \"",": <b>").replace("\"), ('", "</b><br>")
+        pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
+        return (pastList4)
+        
         
     # Re-order table to make sure the newest movies are always at the end
     def sortTable(self):
@@ -580,6 +589,14 @@ class GUIhtml:
             
         else:
             return str(newChunk)
+
+    def addPast(self):
+        newPast = ('''<hr>
+
+<font size=5 font color=red><b>{0}:</b><br>
+
+<font color=yellow size="3">{1}''').format(("year from database"),(self.listPastMoviesAll()))
+        return str(newPast)
 
 
     # Gets records from DB based on most recent movies
@@ -836,6 +853,11 @@ class GUIhtml:
         file = open("index.html", "w")
         file.write(content)
         file.close()
+
+    def createPast(self, content):
+        file = open('pastpage.html','w')
+        file.write(content)
+        file.close()
         
         # Takes content from textbox for use in createHTML() function
     def submit(self, event=None):
@@ -848,10 +870,18 @@ class GUIhtml:
         data=myfile.read()
         myfile.close()
         self.createHTML((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+        self.pastsubmit()
 
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
+
+    def pastsubmit(self):
+        first = self.addPast()
+        myfile = open('pastpage.txt', 'r')
+        data=myfile.read()
+        myfile.close()
+        self.createPast(data.format(first))
 
         # Resets all fields
     def clear(self, event=None):
@@ -873,9 +903,16 @@ class GUIhtml:
         myfile.close()
         return data
 
+    def pastChunk():
+        myfile = open('pastchunk.txt', 'r')
+        data = myfile.read()
+        myfile.close()
+        return data
+
 
         
     chunk = str(textChunk())
+    pastchunk = str(pastChunk())
     
 root = Tk()
         
