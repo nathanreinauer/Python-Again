@@ -5,12 +5,19 @@ from tkinter import ttk
 from tkinter import messagebox
 import time
 from datetime import date
-import datetime
+from datetime import datetime
 import os
 import csv
+import os.path
+import shutil
+import glob
+
 
 conn = sqlite3.connect('movielist.db')
 c = conn.cursor()
+
+# Today - 24 hours = "yesterday"
+twoMonths = time.time() - 5259486
 
 
 class GUIhtml:
@@ -307,7 +314,37 @@ class GUIhtml:
             self.v2.set(1)
 
         
-#---------------------------
+#---------------------------OTHER FUNCTIONS--------------------------
+
+    # Get 'Date Modified' for a file
+    def modTime(self, filePath):
+        t = time.ctime(os.path.getctime(filePath))
+        print('modtime '+t)
+        x = time.mktime(time.strptime(t, "%a %b %d %H:%M:%S %Y"));
+        return x
+
+    # Check if it's been two months or not
+    def twoMonthsAgo(self, num, content):
+        try:
+            newest = max(glob.iglob('Backup\\HomePage\\*.html'), key=os.path.getctime)
+            print('twoMonthsAgo '+newest)        
+            if self.modTime(newest) < twoMonths:
+                print('more than two months ago')
+                if num == 1:
+                    self.backupCreate(content)
+                if num == 2:
+                    self.backupPast(content)                
+            else:
+                print('not two months ago')
+                pass
+        except ValueError:
+            if num == 1:
+                self.backupCreate(content)
+            if num == 2:
+                self.backupPast(content)
+
+
+    
 
 
 
@@ -450,7 +487,7 @@ class GUIhtml:
     # Grab past movies from DB
     def getPastMovies(self):
         epochNow =  int(time.time())
-        epochThisYear = datetime.datetime.now().year # Current year
+        epochThisYear = datetime.now().year # Current year
         pattern = '%Y' 
         epoch1 = int(time.mktime(time.strptime(str(epochThisYear), pattern))) # January 1, Current Year
         c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch1))
@@ -467,7 +504,7 @@ class GUIhtml:
 
     # This cuts up the string that comes from the DB and adds it to HTML
     def listPastMovies(self):
-        epochThisYear = str(datetime.datetime.now().year)
+        epochThisYear = str(datetime.now().year)
         x = str(self.getPastMovies())
         if x[0:4] == '<!->':
             epochThisYear = str(int(epochThisYear) - 1) 
@@ -887,18 +924,20 @@ class GUIhtml:
         file.close()
 
     def createPast(self, content):
-        file = open('pastpage.html','w')
+        file = open('pastmovies.html','w')
         file.write(content)
         file.close()
 
 
     def backupCreate(self, content):
-        file = open("Backup\\backupIndex.html", "w")
+        textname = (datetime.now().month, datetime.now().year)
+        file = open("Backup\\HomePage\\index{}.html".format(textname), "w")
         file.write(content)
         file.close()
 
     def backupPast(self, content):
-        file = open('Backup\\backupPast.html','w')
+        textname = (datetime.now().month, datetime.now().year)
+        file = open("Backup\\PastPage\\pastmovies{}.html".format(textname), "w")
         file.write(content)
         file.close()
         
@@ -914,14 +953,12 @@ class GUIhtml:
         myfile.close()
         self.createHTML((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
         self.pastsubmit()
-
+        self.twoMonthsAgo(1, (data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+            
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
-##        # Backups
-##        if datemodified-of-last-backup + 2 months < today:
-##            self.backupCreate((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
-##            self.backupPast((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+
         
     def pastsubmit(self):
         year1 = self.addPast(2015)
@@ -937,6 +974,7 @@ class GUIhtml:
         data=myfile.read()
         myfile.close()
         self.createPast(data.format(year1, year2, year3, year4, year5, year6, year7, year8, year9))
+        self.twoMonthsAgo(2, data.format(year1, year2, year3, year4, year5, year6, year7, year8, year9))
 
         # Resets all fields
     def clear(self, event=None):
