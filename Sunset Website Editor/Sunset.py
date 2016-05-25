@@ -154,6 +154,7 @@ class GUIhtml:
 
 #-------------------------MESSAGES------------------------#
 
+
     def noTrailer(self):
         result = messagebox.showerror(title='Error!',message=
                             "Error: Trailer field must contain an 11 character video ID from YouTube!")
@@ -477,20 +478,60 @@ class GUIhtml:
         pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
         return (pastList4)
 
-    # Grab ALL past movies from DB for the Past Movies page #---------------------------------------------------------------------------divide this by year?
-    def getPastMoviesAll(self):
-        c.execute("SELECT Dates, Title, Format FROM Movies;")
+    # Grab past movies from DB for the Past Movies page based on the year
+    def getPastMoviesPage(self, year):
+        if year == 2015:
+            epo = 1420099200
+            end = 1451635200
+        if year == 2016:
+            epo = 1451635200
+            end = 1483257600
+        if year == 2017:
+            epo = 1483257600
+            end = 1514793600
+        if year == 2018:
+            epo = 1514793600
+            end = 1546329600
+        if year == 2019:
+            epo = 1546329600
+            end = 1577865600
+        if year == 2020:
+            epo = 1577865600
+            end = 1609488000
+        if year == 2021:
+            epo = 1609488000
+            end = 1641024000
+        if year == 2022:
+            epo = 1641024000
+            end = 1641024000
+        if year == 2023:
+            epo = 1672560000
+            end = 1704096000
+        today = int(time.time())
+        if epo < today and end > today:
+            end = today
+
+        c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch > '{}' AND Epoch < '{}';".format(epo, end))
         return c.fetchall()
 
     # This cuts up the string that comes from the DB and adds it to HTML
-    def listPastMoviesAll(self):
-        epochThisYear = "2016"#-----------------------------------------------------------Grab the year from DB
-        pastList = str(self.getPastMoviesAll()).replace("\\n", "")
-        pastList1 = pastList.replace("', '2D'", "")
-        pastList2 = pastList.replace(" ("+epochThisYear+")', '", ": <b>").replace("'), ('", "</b><br>")
-        pastList3 = pastList2.replace(" ("+epochThisYear+")', \"",": <b>").replace("\"), ('", "</b><br>")
-        pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
-        return (pastList4)
+    def addPast(self, year):
+        thisyear = date.today().year
+        if str(self.getPastMoviesPage(year)) == '[]' or year > thisyear:
+            pastList4 = ''
+            top = ''
+        else:
+            pastList = str(self.getPastMoviesPage(year)).replace("\\n", "")
+            pastList1 = pastList.replace("', '2D'", "")
+            pastList2 = pastList.replace(" ("+str(year)+")', '", ": <b>").replace("'), ('", "</b><br>")
+            pastList3 = pastList2.replace(" ("+str(year)+")', \"",": <b>").replace("\"), ('", "</b><br>")
+            pastList4 = pastList3.replace("[('","").replace("')]","</b><br>").replace("\")]","</b><br>").replace("', '2D", "").replace("\", '2D", "").replace("', '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>").replace("\", '3D", " 3D <img src='http://www.sunsettheatre.com/images/realdlogosmall.jpg'>")
+            top = ('''<hr>
+
+    <font size=5 font color=red><b>'''+str(year)+''':</b><br>
+
+    <font color=yellow size="3">''')
+        return (top + pastList4)
         
         
     # Re-order table to make sure the newest movies are always at the end
@@ -589,15 +630,6 @@ class GUIhtml:
             
         else:
             return str(newChunk)
-
-    def addPast(self):
-        newPast = ('''<hr>
-
-<font size=5 font color=red><b>{0}:</b><br>
-
-<font color=yellow size="3">{1}''').format(("year from database"),(self.listPastMoviesAll()))
-        return str(newPast)
-
 
     # Gets records from DB based on most recent movies
     def latestFormat(self, x):
@@ -858,6 +890,17 @@ class GUIhtml:
         file = open('pastpage.html','w')
         file.write(content)
         file.close()
+
+
+    def backupCreate(self, content):
+        file = open("Backup\\backupIndex.html", "w")
+        file.write(content)
+        file.close()
+
+    def backupPast(self, content):
+        file = open('Backup\\backupPast.html','w')
+        file.write(content)
+        file.close()
         
         # Takes content from textbox for use in createHTML() function
     def submit(self, event=None):
@@ -875,13 +918,25 @@ class GUIhtml:
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
-
+##        # Backups
+##        if datemodified-of-last-backup + 2 months < today:
+##            self.backupCreate((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+##            self.backupPast((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+        
     def pastsubmit(self):
-        first = self.addPast()
+        year1 = self.addPast(2015)
+        year2 = self.addPast(2016)
+        year3 = self.addPast(2017)
+        year4 = self.addPast(2018)
+        year5 = self.addPast(2019)
+        year6 = self.addPast(2020)
+        year7 = self.addPast(2021)
+        year8 = self.addPast(2022)
+        year9 = self.addPast(2023)
         myfile = open('pastpage.txt', 'r')
         data=myfile.read()
         myfile.close()
-        self.createPast(data.format(first))
+        self.createPast(data.format(year1, year2, year3, year4, year5, year6, year7, year8, year9))
 
         # Resets all fields
     def clear(self, event=None):
@@ -917,10 +972,12 @@ class GUIhtml:
 root = Tk()
         
 # Run program          
-def main():            
-    
-##    root = Tk()
+def main():
     guihtml = GUIhtml(root)
+    today = int(time.time())
+    if today > 1672560000:
+        message = messagebox.showinfo(title='Update Needed!',message=
+                                        'This program was designed to last until January 1st, 2024. At that time, the "Past Movies" page will break. Please contact Nathan to update the program before that time. If you are in 2024 and the Past Movies page is broken, use a recent backup of the page from the Updates folder and add the movies manually. The rest of the program should work fine.')
     root.mainloop()
 
 def Quit(event=None):
