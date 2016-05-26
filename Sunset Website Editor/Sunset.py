@@ -260,7 +260,7 @@ class GUIhtml:
         os.system("start "+filename)
         
     def manual(self):
-        print("manual")
+        return ("manual")
 
     def about(self):
         result = messagebox.showinfo(title='About Movie Editor',message="Sunset Movie Editor \n Version 1.0\n Coded by Nate in 2016")
@@ -319,23 +319,19 @@ class GUIhtml:
     # Get 'Date Modified' for a file
     def modTime(self, filePath):
         t = time.ctime(os.path.getctime(filePath))
-        print('modtime '+t)
         x = time.mktime(time.strptime(t, "%a %b %d %H:%M:%S %Y"));
         return x
 
     # Check if it's been two months or not
     def twoMonthsAgo(self, num, content):
         try:
-            newest = max(glob.iglob('Backup\\HomePage\\*.html'), key=os.path.getctime)
-            print('twoMonthsAgo '+newest)        
+            newest = max(glob.iglob('Backup\\HomePage\\*.html'), key=os.path.getctime)        
             if self.modTime(newest) < twoMonths:
-                print('more than two months ago')
                 if num == 1:
                     self.backupCreate(content)
                 if num == 2:
                     self.backupPast(content)                
             else:
-                print('not two months ago')
                 pass
         except ValueError:
             if num == 1:
