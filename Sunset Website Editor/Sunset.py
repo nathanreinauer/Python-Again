@@ -260,7 +260,8 @@ class GUIhtml:
         os.system("start "+filename)
         
     def manual(self):
-        return ("manual")
+        filename = 'userguide.pdf'
+        os.system('start '+filename)
 
     def about(self):
         result = messagebox.showinfo(title='About Movie Editor',message="Sunset Movie Editor \n Version 1.0\n Coded by Nate in 2016")
@@ -316,6 +317,7 @@ class GUIhtml:
         
 #---------------------------OTHER FUNCTIONS--------------------------
 
+
     # Get 'Date Modified' for a file
     def modTime(self, filePath):
         t = time.ctime(os.path.getctime(filePath))
@@ -329,15 +331,21 @@ class GUIhtml:
             if self.modTime(newest) < twoMonths:
                 if num == 1:
                     self.backupCreate(content)
+                    self.backupDB()
                 if num == 2:
-                    self.backupPast(content)                
+                    self.backupPast(content)
+
+                    
             else:
                 pass
         except ValueError:
             if num == 1:
                 self.backupCreate(content)
+                self.backupDB()
             if num == 2:
                 self.backupPast(content)
+
+                
 
 
     
@@ -936,6 +944,10 @@ class GUIhtml:
         file = open("Backup\\PastPage\\pastmovies{}.html".format(textname), "w")
         file.write(content)
         file.close()
+
+    def backupDB(self):
+        dbname = (datetime.now().month, datetime.now().year)
+        shutil.copy2('movielist.db', 'Backup\\Database\\movielist{}.db'.format(dbname))
         
         # Takes content from textbox for use in createHTML() function
     def submit(self, event=None):
