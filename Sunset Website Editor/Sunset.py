@@ -78,6 +78,7 @@ class GUIhtml:
         self.text_image=Text(self.frame_content,width=30,height=1)
         self.text_image.grid(row=8,column=1,columnspan=1,padx=5, sticky='w')
 
+        # Dropdown Menus
         self.contentBox = StringVar()		 
         self.combobox = ttk.Combobox(self.frame_content, textvariable = self.contentBox, state='readonly', width=30, postcommand = self.forComboBox)		  	 
         self.combobox.grid(row=12,column=1, sticky='e')
@@ -93,6 +94,7 @@ class GUIhtml:
         s = ttk.Style()                    
         s.configure('Wild.TRadiobutton',background='#fe001a',foreground='#ffffff')
 
+        # Radio buttons
         self.v = IntVar()
         self.radio2d=ttk.Radiobutton(self.frame_content, text="2D", style='Wild.TRadiobutton', variable=self.v, value=1, command=self.selected).grid(row=4,column=3,sticky='w')
         self.radio3d=ttk.Radiobutton(self.frame_content, text="3D", style='Wild.TRadiobutton', variable=self.v, value=2, command=self.selected).grid(row=4,column=3,sticky='')
@@ -103,11 +105,11 @@ class GUIhtml:
         self.radio3d=ttk.Radiobutton(self.frame_content, text="Dolby 7.1", style='Wild.TRadiobutton', variable=self.v2, value=2, command=self.selected2).grid(row=4,column=2,padx=35,sticky='e')
         self.v2.set(1)
 
+        # Spinbox for Year
         self.var = StringVar()
         self.var.set(str(date.today().year))
         self.spin = Spinbox(self.frame_content, width=6,from_=1990, to=2090, textvariable=self.var)
         self.spin.grid(row=4, column=1, sticky='e')
-
     
         # Buttons
         ttk.Button(self.frame_content, text='Import Record',command=self.buttClick).grid(row=12,column=2,padx=5,pady=5,sticky='w')
@@ -129,6 +131,7 @@ class GUIhtml:
         filemenu.add_command(label="Quit", underline=0, accelerator='CTRL+Q',command=Quit)
         menubar.add_cascade(label="File", underline=0,menu=filemenu)
 
+        # Accelerators
         menubar.master.bind('<Control-q>', Quit)
         menubar.master.bind('<Control-h>', self.submit)
         menubar.master.bind('<Control-o>', self.openNewest)
@@ -148,7 +151,8 @@ class GUIhtml:
         menubar.add_cascade(label="View", underline=0, menu=viewmenu)
 
 
-
+        # Help Menu
+        master.config(menu=menubar)
         helpmenu = Menu(menubar, tearoff=0)
         helpmenu.add_command(label="View Manual", underline=0, command=self.manual)
         helpmenu.add_command(label="Contact Tech Support", underline=0, command=self.techSupport)
@@ -156,8 +160,7 @@ class GUIhtml:
         helpmenu.add_command(label="About", underline=0, command=self.about)
         menubar.add_cascade(label="Help", underline=0, menu=helpmenu)
 
-        # Help Menu
-        master.config(menu=menubar)
+
 
 #-------------------------MESSAGES------------------------#
 
@@ -177,8 +180,6 @@ class GUIhtml:
     def blankRec(self):
         result = messagebox.showerror(title='Error!',message=
                             "Error: Record could not be added because one or more required fields were left blank.")
-
-        
 
     def messageAdded(self):
         result = messagebox.showinfo(title='Record Added!',message=
@@ -216,40 +217,38 @@ class GUIhtml:
 
 #---------------MENU FUNCTIONS
 
-    def techSupport(self):
+    def techSupport(self): # Create an email to me
         webbrowser.open("mailto:n8thegreatest@gmail.com?subject=Help&body=Heeelp!")
 
-    def overwriteCurrent(self):
+    def overwriteCurrent(self): # Overwrites an entry in the DB
         overRec = self.addEpoch()
         c.execute("DELETE FROM Movies WHERE Epoch = {}".format(overRec))
         conn.commit()
         self.addRecord()
 
-
-    def deleteCurrent(self):
+    def deleteCurrent(self): # Deletes an entry in the DB
         delRec = self.addEpoch()
         c.execute("DELETE FROM Movies WHERE Epoch = {}".format(delRec))
         conn.commit()
         self.clear()
 
-    def openNewest(self, event=None):
+    def openNewest(self, event=None): # Opens last index.html file
         if os.path.isfile('index.html') == True:
             filename = 'index.html'
             os.system("start "+filename)
         else:
             self.notFound()
 
-
-    def watchTrailer(self):
+    def watchTrailer(self): # Opens trailer in YouTube
         if len(self.text_trailer.get("1.0", 'end-1c')) == 11:
             webbrowser.open('https://www.youtube.com/watch?v={}'.format(self.text_trailer.get("1.0", 'end-1c')))
         else:
             self.noTrailer()
 
-    def visitSite(self):
+    def visitSite(self): # Opens SunsetTheatre.com
         webbrowser.open('http://sunsettheatre.com')
 
-    def viewDB(self, x):
+    def viewDB(self, x): # Opens DB in Notepad or Excel
         data = c.execute("SELECT * FROM Movies")
 
         with open('output.{}'.format(x), 'w') as f:
@@ -259,19 +258,18 @@ class GUIhtml:
         filename = 'output.{}'.format(x)
         os.system("start "+filename)
         
-    def manual(self):
+    def manual(self): # Opens User's Guide
         filename = 'userguide.pdf'
         os.system('start '+filename)
 
-    def about(self):
+    def about(self): # Opens 'About' window
         result = messagebox.showinfo(title='About Movie Editor',message="Sunset Movie Editor \n Version 1.0\n Coded by Nate in 2016")
 
-
-    def getLast(self, x):
+    def getLast(self, x): # SELECTS a field from the most recent record
         c.execute("SELECT {} FROM Movies ORDER BY ID DESC LIMIT 1;".format(x))
         return c.fetchall()
 
-    def importLast(self, event=None):
+    def importLast(self, event=None): # Puts data from DB into the main form
         self.clear()
  
         title = str(self.getLast("Title"))[3:-4]
@@ -301,7 +299,6 @@ class GUIhtml:
         year = str(self.getLast("Dates"))[-9:-5]
         self.var.set(year)
         
-
         format1 = str(self.getLast("Format"))[3:-4]
         if format1 == '3D':
             self.v.set(2)
@@ -333,9 +330,7 @@ class GUIhtml:
                     self.backupCreate(content)
                     self.backupDB()
                 if num == 2:
-                    self.backupPast(content)
-
-                    
+                    self.backupPast(content)                    
             else:
                 pass
         except ValueError:
@@ -345,38 +340,26 @@ class GUIhtml:
             if num == 2:
                 self.backupPast(content)
 
-                
-
-
-    
-
-
-
     # Radio Button functions
     def selected(self):
         return(self.v.get())
 
     def selected2(self):
         return(self.v2.get())
-
-        # SELECT each field from a record in DB (based on what's in combobox)
-
+    
+    # SELECT each field from a record in DB (based on what's in combobox)
     def getFromCombo(self, x):
         varID = (self.contentBox.get()).split(' ', 1)[0]
         c.execute(("SELECT {} FROM Movies WHERE ID ='{}'").format(x, varID))
         return c.fetchall()
-    # Combo Box
 
+    # Puts data from last 9 records of DB into combobox
     def forComboBox(self):
         c.execute("SELECT ID, Format, Title FROM Movies ORDER BY ID DESC LIMIT 0,9")
         combo = c.fetchall()
         self.combobox.config(values = combo)
 
-
-
-
-
-    # "Import" button -- Gets DB records from "getTitle", etc. and puts them into text fields
+    # "Import" button for combobox-- Gets DB records from "getTitle", etc. and puts them into text fields
     def buttClick(self):
         if self.contentBox.get() == ('Select movie:'):
             self.blankImport()
@@ -410,7 +393,6 @@ class GUIhtml:
         year = str(self.getFromCombo("Dates"))[-9:-5]
         self.var.set(year)
         
-
         format1 = str(self.getFromCombo("Format"))[3:-4]
         if format1 == '3D':
             self.v.set(2)
@@ -423,14 +405,12 @@ class GUIhtml:
         else:
             self.v2.set(1)
 
-
     # Converts TEXBOX dates into Epoch
     def addEpoch(self): 
         datesTemp = (self.text_date2d.get("1.0", 'end-1c')).split(',', 1)[0] # Grab the first day from date field, eg. "May 12"
-        datesEpoch = datesTemp[:]+', ' + str(self.spin.get())#str(date.today().year) # Slice the ends off and add current year (change to combobox later?)
-        date_time = datesEpoch # Not sure what this is for
+        date_time = datesTemp[:]+', ' + str(self.spin.get())# Slice the ends off and add year from spinbox
         pattern = '%B %d, %Y' # Tell python what the date format is
-        epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert it to Epoch
+        epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert date to Epoch using pattern
         return (epoch)
 
     # Figures out upcoming movies in DB
@@ -487,7 +467,6 @@ class GUIhtml:
         else:
             return movieVar5
 
-
     # Grab past movies from DB
     def getPastMovies(self):
         epochNow =  int(time.time())
@@ -506,7 +485,7 @@ class GUIhtml:
             c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch1))
             return c.fetchall()
 
-    # This cuts up the string that comes from the DB and adds it to HTML
+    # This cuts up the string that comes from the DB and adds it to index.html
     def listPastMovies(self):
         epochThisYear = str(datetime.now().year)
         x = str(self.getPastMovies())
@@ -555,7 +534,7 @@ class GUIhtml:
         c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch > '{}' AND Epoch < '{}';".format(epo, end))
         return c.fetchall()
 
-    # This cuts up the string that comes from the DB and adds it to HTML
+    # This cuts up the string that comes from the DB and adds it to pastmovies.html
     def addPast(self, year):
         thisyear = date.today().year
         if str(self.getPastMoviesPage(year)) == '[]' or year > thisyear:
@@ -573,8 +552,7 @@ class GUIhtml:
 
     <font color=yellow size="3">''')
         return (top + pastList4)
-        
-        
+           
     # Re-order table to make sure the newest movies are always at the end
     def sortTable(self):
         try:
@@ -585,7 +563,6 @@ class GUIhtml:
         c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch FROM Movies ORDER BY Epoch;')
         c.execute('DROP TABLE Movies;')
         c.execute('ALTER TABLE Ordered RENAME TO Movies;')
-
 
     # Adds records into DB from text fields
     def addRecord(self):
@@ -613,8 +590,7 @@ class GUIhtml:
                     newLastEpoch = newEpoch + 432000
                 else:
                     newLastEpoch = newEpoch + 259200
-                
-                
+                                
                 c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound, LastEpoch) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}", {});'
                           .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound, newLastEpoch))
                 conn.commit()
@@ -625,7 +601,7 @@ class GUIhtml:
             self.blankRec()
 
     # Grabs record of recent movies and plugs it into HTML chunk, does some trickery to combine 2D and 3D movies
-    # 2D and 3D have to be next to each other in DB to work
+    # 2D and 3D have to be next to each other in DB to work, hence the sortTable() function
     def addChunk1(self, x):
         sound = str(self.latestSound(x))[9:-6]
         if str(self.latestFormat(x))[3:-4] == '2D':
@@ -694,7 +670,6 @@ class GUIhtml:
             varID = (self.newMovieVar(5))
             c.execute(("SELECT Format FROM Movies WHERE ID ='{}'").format(varID))
             return c.fetchall()
-
     
     def latestSynopsis(self, x):
         if x == 1:
@@ -718,7 +693,6 @@ class GUIhtml:
             c.execute(("SELECT Synopsis FROM Movies WHERE ID ='{}'").format(varID))
             return c.fetchall()
             
-
     def latestTitle(self, x):
         if x == 1:
             varID = (self.newMovieVar(1))
@@ -739,10 +713,7 @@ class GUIhtml:
         else:
             varID = (self.newMovieVar(5))
             c.execute(("SELECT Title FROM Movies WHERE ID ='{}';").format(varID))
-            return c.fetchall()
-
-
-        
+            return c.fetchall()   
 
     def latestCast(self, x):
         if x == 1:
@@ -921,35 +892,38 @@ class GUIhtml:
             return c.fetchall()  
 
 
-        # Creates and writes html file
+        # Creates and writes index.html file
     def createHTML(self, content):
         file = open("index.html", "w")
         file.write(content)
         file.close()
 
+        # Creates and writes pastmovies.html file
     def createPast(self, content):
         file = open('pastmovies.html','w')
         file.write(content)
         file.close()
 
-
+        # Creates and writes backup of index.html file
     def backupCreate(self, content):
         textname = (datetime.now().month, datetime.now().year)
         file = open("Backup\\HomePage\\index{}.html".format(textname), "w")
         file.write(content)
         file.close()
 
+        # Creates and writes backup of pastmovies.html file
     def backupPast(self, content):
         textname = (datetime.now().month, datetime.now().year)
         file = open("Backup\\PastPage\\pastmovies{}.html".format(textname), "w")
         file.write(content)
         file.close()
 
+        # Copies movielist.db and pastes it in Backup folder
     def backupDB(self):
         dbname = (datetime.now().month, datetime.now().year)
         shutil.copy2('movielist.db', 'Backup\\Database\\movielist{}.db'.format(dbname))
         
-        # Takes content from textbox for use in createHTML() function
+        # Takes content from text file for use in createHTML() function
     def submit(self, event=None):
         first = self.addChunk1(1)
         second = self.addChunk1(2)
@@ -967,7 +941,7 @@ class GUIhtml:
         messagebox.showinfo(title='Web page created successfully!',message=
                             "Success! Now just upload this index.html file to the server.")
 
-        
+        # Takes content from text file for use in createPast() function
     def pastsubmit(self):
         year1 = self.addPast(2015)
         year2 = self.addPast(2016)
@@ -998,20 +972,20 @@ class GUIhtml:
         self.v2.set(1)
         self.var.set(str(date.today().year))
 
+        # Gets index.html template from text file
     def textChunk():
         myfile = open('chunk.txt', 'r')
         data = myfile.read()
         myfile.close()
         return data
 
+        # Gets pastmovies.html template from text file
     def pastChunk():
         myfile = open('pastchunk.txt', 'r')
         data = myfile.read()
         myfile.close()
         return data
 
-
-        
     chunk = str(textChunk())
     pastchunk = str(pastChunk())
     
