@@ -144,7 +144,7 @@ class GUIhtml:
         viewmenu = Menu(menubar, tearoff=0)
         dbmenu = Menu(viewmenu, tearoff=0)
         viewmenu.add_command(label="Watch Trailer", underline=0, command=self.watchTrailer)
-        viewmenu.add_command(label="Visit SunsetTheatre.com", underline=7, command=self.visitSite)
+        viewmenu.add_command(label="Visit SunsetTheatre.com", underline=6, command=self.visitSite)
         dbmenu.add_command(label="Text File", underline=0, command=lambda: self.viewDB('txt'))
         dbmenu.add_command(label="CSV File", underline=0, command=lambda: self.viewDB('csv'))
         viewmenu.add_cascade(label="View Database As...",underline=0, menu=dbmenu)
@@ -163,7 +163,10 @@ class GUIhtml:
 
 
 #-------------------------MESSAGES------------------------#
-
+        
+    def closedMessage(self):
+        result = messagebox.showinfo(title='Balls', message=
+                                     "Balls, balls, flapping around the kitchen.")
 
     def noTrailer(self):
         result = messagebox.showerror(title='Error!',message=
@@ -406,11 +409,16 @@ class GUIhtml:
             self.v2.set(1)
 
     # Converts TEXBOX dates into Epoch
-    def addEpoch(self): 
-        datesTemp = (self.text_date2d.get("1.0", 'end-1c')).split(',', 1)[0] # Grab the first day from date field, eg. "May 12"
-        date_time = datesTemp[:]+', ' + str(self.spin.get())# Slice the ends off and add year from spinbox
-        pattern = '%B %d, %Y' # Tell python what the date format is
-        epoch = int(time.mktime(time.strptime(date_time, pattern))) # Convert date to Epoch using pattern
+    def addEpoch(self):
+        if ',' in (self.text_date2d.get("1.0", 'end-1c')): # If there's a comma in the date...
+            datesTemp = (self.text_date2d.get("1.0", 'end-1c')).split(',', 1)[0] # Grab the first day from date field, eg. "May 12"
+            date_time = datesTemp[:]+', ' + str(self.spin.get())# Slice the ends off and add year from spinbox
+            pattern = '%B %d, %Y' # Tell python what the date format is
+        else: # If there's NO comma in the date...
+            datesTemp = (self.text_date2d.get("1.0", 'end-1c')).split(' &', 1)[0] # Grab the first day from date field, eg. "May 12"
+            date_time = datesTemp[:]+', ' + str(self.spin.get())# Slice the ends off and add year from spinbox
+            pattern = '%B %d, %Y' # Tell python what the date format is         
+        epoch = int(time.mktime(time.strptime(date_time, pattern)))# Convert date to Epoch using pattern
         return (epoch)
 
     # Figures out upcoming movies in DB
@@ -472,7 +480,7 @@ class GUIhtml:
         epochNow =  int(time.time())
         epochThisYear = datetime.now().year # Current year
         pattern = '%Y' 
-        epoch1 = int(time.mktime(time.strptime(str(epochThisYear), pattern))) # January 1, Current Year
+        epoch1 = int(time.mktime(time.strptime(str(epochThisYear), pattern)))-1 # January 1, Current Year / Had to subtract 1 (see getPastMoviesPage() for reason)
         c.execute("SELECT Dates, Title, Format FROM Movies WHERE LastEpoch < {} AND Epoch > {};".format(epochNow, epoch1))
         fetch = (c.fetchall())
         epoch2 = int(time.mktime(time.strptime(str(epochThisYear - 1), pattern))) # January 1, Previous Year
@@ -499,6 +507,7 @@ class GUIhtml:
         return (pastList4)
 
     # Grab past movies from DB for the Past Movies page based on the year
+    # Had to subtract "1" from "epo" because otherwise any Jan 1st movies get cut off
     def getPastMoviesPage(self, year):
         if year == 2015:
             epo = 1420099200
@@ -531,7 +540,7 @@ class GUIhtml:
         if epo < today and end > today:
             end = today
 
-        c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch > '{}' AND Epoch < '{}';".format(epo, end))
+        c.execute("SELECT Dates, Title, Format FROM Movies WHERE Epoch > '{}' AND Epoch < '{}';".format(epo -1 , end))
         return c.fetchall()
 
     # This cuts up the string that comes from the DB and adds it to pastmovies.html
@@ -631,6 +640,7 @@ class GUIhtml:
             reald = '<img src="http://www.sunsettheatre.com/images/spacer.jpg"><img src="http://www.sunsettheatre.com/images/spacer.jpg"><img src="http://www.sunsettheatre.com/images/realdlogo.jpg">'
         else:
             reald = ''
+        closed = '' # COME BACK TO THIS LATER
         newChunk = self.chunk.format((title),
             (dates),
             (dates3d),
@@ -641,7 +651,8 @@ class GUIhtml:
             (image),
             (rating),
             (reald),
-            (sound))
+            (sound),
+            (closed))
         if title == '':
             return ''
             
