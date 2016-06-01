@@ -1,7 +1,7 @@
 <img src=http://www.SunsetTheatre.com/images/Reel2.gif><br>
 <b><font color="yellow" size="6">
-{1}<br>
-<font color="DodgerBlue">{2}
+{1}
+{2}
 {11}
 <br>
 

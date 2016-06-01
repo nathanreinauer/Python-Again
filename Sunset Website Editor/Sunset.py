@@ -4,6 +4,7 @@ from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
 import time
+from tkinter import simpledialog
 from datetime import date
 from datetime import datetime
 import os
@@ -165,8 +166,8 @@ class GUIhtml:
 #-------------------------MESSAGES------------------------#
         
     def closedMessage(self):
-        result = messagebox.showinfo(title='Balls', message=
-                                     "Balls, balls, flapping around the kitchen.")
+        result = str(simpledialog.askstring("Closed?", "It looks like you're missing a day!\nIf the theatre will be closed, enter a message below explaining which day(s) and why.\nOtherwise hit Cancel."))
+        return str(result)
 
     def noTrailer(self):
         result = messagebox.showerror(title='Error!',message=
@@ -256,7 +257,7 @@ class GUIhtml:
 
         with open('output.{}'.format(x), 'w') as f:
             writer = csv.writer(f)
-            writer.writerow(['Record ID', 'Epoch', 'Dates', 'Format', 'Title', 'Runtime', 'Image', 'Trailer', 'Cast', 'Synopsis', 'Rating', 'Sound', 'Last Epoch'])
+            writer.writerow(['Record ID', 'Epoch', 'Dates', 'Format', 'Title', 'Runtime', 'Image', 'Trailer', 'Cast', 'Synopsis', 'Rating', 'Sound', 'Last Epoch', 'Closed'])
             writer.writerows(data)
         filename = 'output.{}'.format(x)
         os.system("start "+filename)
@@ -568,8 +569,8 @@ class GUIhtml:
             c.execute('DROP TABLE Ordered;')
         except:
             pass
-        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER UNIQUE, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT, LastEpoch INTEGER);')
-        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch FROM Movies ORDER BY Epoch;')
+        c.execute('CREATE TABLE Ordered (ID INTEGER PRIMARY KEY, Epoch INTEGER UNIQUE, Dates TEXT, Format TEXT, Title TEXT, Runtime TEXT, Image TEXT, Trailer TEXT, Actors TEXT, Synopsis TEXT, Rating TEXT, Sound TEXT, LastEpoch INTEGER, Closed TEXT);')
+        c.execute('INSERT INTO Ordered  (Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch, Closed) SELECT Epoch, Dates, Format, Title, Runtime, Image, Trailer, Actors, Synopsis, Rating, Sound, LastEpoch, Closed FROM Movies ORDER BY Epoch;')
         c.execute('DROP TABLE Movies;')
         c.execute('ALTER TABLE Ordered RENAME TO Movies;')
 
@@ -599,34 +600,76 @@ class GUIhtml:
                     newLastEpoch = newEpoch + 432000
                 else:
                     newLastEpoch = newEpoch + 259200
-                                
-                c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound, LastEpoch) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}", {});'
-                          .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound, newLastEpoch))
-                conn.commit()
-                self.messageAdded()
+
+                c.execute('SELECT * FROM Movies WHERE Epoch = "{}"'.format(newEpoch))
+                fetch = (str(c.fetchall()))
+                if fetch == '[]':
+                    print ('Brackets: '+fetch)
+                    if newDates.count(',') == 0:
+                        newClosed = str(self.closedMessage())
+                    else:
+                        newClosed = ''
+                
+                    c.execute('INSERT INTO Movies (Title, Synopsis, Actors, Runtime, Rating, Trailer, Dates, Image, Format, Epoch, Sound, LastEpoch, Closed) VALUES ("{}","{}","{}","{}","{}","{}","{}","{}","{}",{},"{}", {}, "{}");'
+                              .format(newTitle, newSynopsis, newCast, newRuntime, newRating, newTrailer, newDates, newImage, newFormat, newEpoch, newSound, newLastEpoch, newClosed))
+                    conn.commit()
+                    self.messageAdded()
+                else:
+                    print('overwrite this shiz')
+                    self.messageOverwrite()
             except sqlite3.IntegrityError:
                     self.messageOverwrite()
         except ValueError:
             self.blankRec()
 
+
     # Grabs record of recent movies and plugs it into HTML chunk, does some trickery to combine 2D and 3D movies
     # 2D and 3D have to be next to each other in DB to work, hence the sortTable() function
     def addChunk1(self, x):
+        self.sortTable()
+        closed = str(self.latestClosed(x))[3:-4]
+        if closed == '': # if "closed" comes back empty from the DB, do nothing
+            closed = ''
+        elif closed == 'None':
+            closed = ''
+        elif closed == 'on':
+            closed = ''
+        elif closed == None:
+            closed = ''
+        else:
+            print(str(x)+" it's supposed to print the CLOSED message on the website...")
+            closed = '<FONT color=yellow size=3>'+closed+'<br><br>' # but if "closed" comes back with text in it, print that sucka on the website
         sound = str(self.latestSound(x))[9:-6]
         if str(self.latestFormat(x))[3:-4] == '2D':
-            dates = ((str(self.latestDates(x))[3:-10]))
+            dates = ((str(self.latestDates(x))[3:-10]) + '<br>')
             dates3d = ''
+            print(str(x)+" 2D movie")
         else:
             dates = ''
-            dates3d = ((str(self.latestDates(x))[3:-10])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
+            dates3d = ((str(self.latestDates(x))[3:-10])+'<font color="DodgerBlue"> in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
         if self.latestTitle(x) == self.latestTitle(x+1):
+            print(str(x)+" 2D & 3D movie")
             title = str(self.latestTitle(x))[3:-4]
-            dates = ((str(self.latestDates(x))[3:-10])+' in 2D')
-            dates3d = ((str(self.latestDates(x+1))[3:-10])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
+            dates = ((str(self.latestDates(x))[3:-10])+' in 2D<br>')
+            dates3d = ('<font color="DodgerBlue">'+(str(self.latestDates(x+1))[3:-10])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
+            closed = str(self.latestClosed(x+1))[3:-4]
+            if closed == '': # if "closed" comes back empty from the DB, do nothing
+                closed = ''
+            elif closed == 'None':
+                closed = ''
+            elif closed == 'on':
+                closed = ''
+            elif closed == None:
+                closed = ''
+            else:
+                print("TWO it's supposed to print the CLOSED message on the website...")
+                closed = '<FONT color=yellow size=3>'+closed+'<br><br>' # but if "closed" comes back with text in it, print that sucka on the website
         elif self.latestTitle(x) == self.latestTitle(x-1):
             title = ''
+            print(str(x)+" Don't print the 2D and 3D movies twice")
         else:
             title = str(self.latestTitle(x))[3:-4]
+            print(str(x)+" print the TITLE as normal")
         synopsis = str(self.latestSynopsis(x))[3:-4]
         cast = str(self.latestCast(x))[3:-4]
         runtime = str(self.latestRuntime(x))[3:-4]
@@ -640,7 +683,8 @@ class GUIhtml:
             reald = '<img src="http://www.sunsettheatre.com/images/spacer.jpg"><img src="http://www.sunsettheatre.com/images/spacer.jpg"><img src="http://www.sunsettheatre.com/images/realdlogo.jpg">'
         else:
             reald = ''
-        closed = '' # COME BACK TO THIS LATER
+
+
         newChunk = self.chunk.format((title),
             (dates),
             (dates3d),
@@ -654,9 +698,11 @@ class GUIhtml:
             (sound),
             (closed))
         if title == '':
+            print(str(x)+" Don't print this movie. Empty.")
             return ''
             
         else:
+            print(str(x)+" Good to go. Print")
             return str(newChunk)
 
     # Gets records from DB based on most recent movies
@@ -900,7 +946,30 @@ class GUIhtml:
         else:
             varID = (self.newMovieVar(5))
             c.execute(("SELECT Sound FROM Movies WHERE ID ='{}'").format(varID))
-            return c.fetchall()  
+            return c.fetchall()
+        
+    def latestClosed(self, x):
+        if x == 1:
+            varID = (self.newMovieVar(1))
+            c.execute(("SELECT Closed FROM Movies WHERE ID ='{}';").format(varID))
+            return c.fetchall()
+        elif x == 2:
+            varID = (self.newMovieVar(2))
+            c.execute(("SELECT Closed FROM Movies WHERE ID ='{}';").format(varID))
+            return c.fetchall()
+        elif x == 3:
+            varID = (self.newMovieVar(3))
+            c.execute(("SELECT Closed FROM Movies WHERE ID ='{}';").format(varID))
+            return c.fetchall()
+        elif x == 4:
+            varID = (self.newMovieVar(4))
+            c.execute(("SELECT Closed FROM Movies WHERE ID ='{}';").format(varID))
+            return c.fetchall()
+        else:
+            varID = (self.newMovieVar(5))
+            c.execute(("SELECT Closed FROM Movies WHERE ID ='{}';").format(varID))
+            return c.fetchall()   
+
 
 
         # Creates and writes index.html file
