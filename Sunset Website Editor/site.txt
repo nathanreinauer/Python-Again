@@ -231,6 +231,7 @@ We gladly accept Visa and Mastercard.<br><br>
 {2}
 {3}
 {4}
+{5}
 
 
 
@@ -259,7 +260,7 @@ To see what the critics think
 <FONT color="red" size="5"><b>Past Movies:</b><br>
 <FONT color=yellow size="3">
 
-{5}
+{6}
 
 <br><br>
 

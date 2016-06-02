@@ -129,6 +129,8 @@ class GUIhtml:
         filemenu.add_command(label="Delete Current Record", underline=0, accelerator='CTRL+D', command=self.messageDeleteRec)
         filemenu.add_command(label="Clear All Fields", underline=0, accelerator='CTRL+F', command=self.clear)
         filemenu.add_separator()
+        filemenu.add_command(label="Add Message to Home Page", underline=4, accelerator='CTRL+M', command=self.menuMessage)
+        filemenu.add_separator()
         filemenu.add_command(label="Quit", underline=0, accelerator='CTRL+Q',command=Quit)
         menubar.add_cascade(label="File", underline=0,menu=filemenu)
 
@@ -139,6 +141,7 @@ class GUIhtml:
         menubar.master.bind('<Control-i>', self.importLast)
         menubar.master.bind('<Control-d>', self.messageDeleteRec)
         menubar.master.bind('<Control-f>', self.clear)
+        menubar.master.bind('<Control-m>', self.menuMessage)
         
         
         # View Menu
@@ -164,6 +167,10 @@ class GUIhtml:
 
 
 #-------------------------MESSAGES------------------------#
+
+    def wrongFormat(self):
+        result = messagebox.showerror(title='Error!',message=
+                            "Error: You must enter a valid date in the following format:\nMonth 0, 0000 (January 13, 2020 for example)")
         
     def closedMessage(self):
         result = str(simpledialog.askstring("Closed?", "It looks like you're missing a day!\nIf the theatre will be closed, enter a message below explaining which day(s) and why.\nOtherwise hit Cancel."))
@@ -220,6 +227,34 @@ class GUIhtml:
 
 
 #---------------MENU FUNCTIONS
+        
+    def menuMessage(self, event=None):
+
+        # Dialog box asking for date, and then print the epoch in the text filename
+        date = str(simpledialog.askstring("Special Message", "How long would you like the message to remain on the home page?\n(Please type a date in this exact format: 'June 3, 2016')."))
+        if date == 'None':
+            pass
+        else:
+            try:
+                pattern = '%B %d, %Y'      
+                epoch = int(time.mktime(time.strptime(date, pattern)))
+                filename = 'message{}.txt'.format(epoch)
+
+                # Get rid of previous message text files
+                for file in glob.glob("message*.txt"):
+                    os.remove(file)
+                    
+                # Open the new text file in Notepad with boilerplate instructions already inserted
+                file = open(filename, 'a')
+                file.write(
+                    '<!--\n\nType the HTML code for your message below, and then save and close the text file.\n'
+                    'The message will appear above the upcoming movies next time you update the website,\n'
+                    'and will remain there until the date you specified.\n\n'
+                    '(These instructions will not appear on the website.)\n\n-->')
+                file.close()
+                os.system('start '+filename)
+            except:
+                self.wrongFormat()
 
     def techSupport(self): # Create an email to me
         webbrowser.open("mailto:n8thegreatest@gmail.com?subject=Help&body=Heeelp!")
@@ -604,7 +639,6 @@ class GUIhtml:
                 c.execute('SELECT * FROM Movies WHERE Epoch = "{}"'.format(newEpoch))
                 fetch = (str(c.fetchall()))
                 if fetch == '[]':
-                    print ('Brackets: '+fetch)
                     if newDates.count(',') == 0:
                         newClosed = str(self.closedMessage())
                     else:
@@ -615,7 +649,6 @@ class GUIhtml:
                     conn.commit()
                     self.messageAdded()
                 else:
-                    print('overwrite this shiz')
                     self.messageOverwrite()
             except sqlite3.IntegrityError:
                     self.messageOverwrite()
@@ -626,7 +659,6 @@ class GUIhtml:
     # Grabs record of recent movies and plugs it into HTML chunk, does some trickery to combine 2D and 3D movies
     # 2D and 3D have to be next to each other in DB to work, hence the sortTable() function
     def addChunk1(self, x):
-        self.sortTable()
         closed = str(self.latestClosed(x))[3:-4]
         if closed == '': # if "closed" comes back empty from the DB, do nothing
             closed = ''
@@ -637,18 +669,15 @@ class GUIhtml:
         elif closed == None:
             closed = ''
         else:
-            print(str(x)+" it's supposed to print the CLOSED message on the website...")
             closed = '<FONT color=yellow size=3>'+closed+'<br><br>' # but if "closed" comes back with text in it, print that sucka on the website
         sound = str(self.latestSound(x))[9:-6]
         if str(self.latestFormat(x))[3:-4] == '2D':
             dates = ((str(self.latestDates(x))[3:-10]) + '<br>')
             dates3d = ''
-            print(str(x)+" 2D movie")
         else:
             dates = ''
             dates3d = ((str(self.latestDates(x))[3:-10])+'<font color="DodgerBlue"> in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
         if self.latestTitle(x) == self.latestTitle(x+1):
-            print(str(x)+" 2D & 3D movie")
             title = str(self.latestTitle(x))[3:-4]
             dates = ((str(self.latestDates(x))[3:-10])+' in 2D<br>')
             dates3d = ('<font color="DodgerBlue">'+(str(self.latestDates(x+1))[3:-10])+' in 3D<img src="http://www.SunsetTheatre.com/images/blueglasses.jpg"><br>')
@@ -662,14 +691,11 @@ class GUIhtml:
             elif closed == None:
                 closed = ''
             else:
-                print("TWO it's supposed to print the CLOSED message on the website...")
                 closed = '<FONT color=yellow size=3>'+closed+'<br><br>' # but if "closed" comes back with text in it, print that sucka on the website
         elif self.latestTitle(x) == self.latestTitle(x-1):
             title = ''
-            print(str(x)+" Don't print the 2D and 3D movies twice")
         else:
             title = str(self.latestTitle(x))[3:-4]
-            print(str(x)+" print the TITLE as normal")
         synopsis = str(self.latestSynopsis(x))[3:-4]
         cast = str(self.latestCast(x))[3:-4]
         runtime = str(self.latestRuntime(x))[3:-4]
@@ -698,12 +724,23 @@ class GUIhtml:
             (sound),
             (closed))
         if title == '':
-            print(str(x)+" Don't print this movie. Empty.")
             return ''
             
         else:
-            print(str(x)+" Good to go. Print")
             return str(newChunk)
+
+    def addMessage(self):
+        for file in glob.glob("message*.txt"):
+            messagefile = file
+        mEpoch = (str(messagefile)[7:-4])
+        today = int(time.time())
+        if int(mEpoch) > today:
+            mess = open(messagefile, 'r')
+            message = mess.read()
+            mess.close()
+        else:
+            message = ''
+        return message
 
     # Gets records from DB based on most recent movies
     def latestFormat(self, x):
@@ -1005,6 +1042,8 @@ class GUIhtml:
         
         # Takes content from text file for use in createHTML() function
     def submit(self, event=None):
+        self.sortTable()
+        message = self.addMessage()
         first = self.addChunk1(1)
         second = self.addChunk1(2)
         third = self.addChunk1(3)
@@ -1013,9 +1052,9 @@ class GUIhtml:
         myfile = open('site.txt', 'r')
         data=myfile.read()
         myfile.close()
-        self.createHTML((data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+        self.createHTML((data.format(message, first, second, third, fourth, fifth, self.listPastMovies())))
         self.pastsubmit()
-        self.twoMonthsAgo(1, (data.format(first, second, third, fourth, fifth, self.listPastMovies())))
+        self.twoMonthsAgo(1, (data.format(message, first, second, third, fourth, fifth, self.listPastMovies())))
             
         # Confirmation of submission via dialog box
         messagebox.showinfo(title='Web page created successfully!',message=
